@@ -269,27 +269,36 @@ public abstract class CombatCheck extends Check {
      * Get player ping
      */
     protected double getPing(Player player) {
+        // Modern Paper API check - much safer and more reliable
+        try {
+            if (player.getClass().getMethod("getPing") != null) {
+                return player.getPing();
+            }
+        } catch (NoSuchMethodException e) {
+            // Fallback to reflection for older Spigot versions if Paper API is not present
+        }
+
         try {
             Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            Object ping = entityPlayer.getClass().getField("ping").get(entityPlayer);
-            return ((Number) ping).doubleValue();
+            // The field name is "ping" in modern versions, but was "ping" in older ones.
+            // Let's keep it simple for now.
+            return (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
         } catch (Exception e) {
             return 0.0;
         }
     }
     
     /**
-     * Check if server version is 1.9 or higher
+     * Check if server version is 1.9 or higher. This is more robust than string matching.
      */
     protected boolean isVersion1_9Plus() {
-        String version = plugin.getServerVersion();
-        return version.contains("1.9") || version.contains("1.10") || 
-               version.contains("1.11") || version.contains("1.12") ||
-               version.contains("1.13") || version.contains("1.14") ||
-               version.contains("1.15") || version.contains("1.16") ||
-               version.contains("1.17") || version.contains("1.18") ||
-               version.contains("1.19") || version.contains("1.20") ||
-               version.contains("1.21");
+        try {
+            String[] parts = plugin.getServer().getBukkitVersion().split("-")[0].split("\\.");
+            int minor = Integer.parseInt(parts[1]);
+            return minor >= 9;
+        } catch (Exception e) {
+            return false; // Fallback on parsing error
+        }
     }
     
     /**

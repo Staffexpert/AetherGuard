@@ -278,8 +278,8 @@ public class AetherGuardAPI {
         return new APIStats(
             totalChecks,
             enabledChecks,
-            violationStats.getTotalPlayers(),
-            violationStats.getTotalViolations(),
+            (int) violationStats.getTotalPlayers(),
+            (int) violationStats.getTotalViolations(),
             getTPS(),
             plugin.getServer().getOnlinePlayers().size()
         );

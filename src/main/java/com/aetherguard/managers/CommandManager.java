@@ -11,13 +11,13 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 /**
- * 🛡️ AetherGuard Command Manager
- * 
- * Manages all anti-cheat commands and tab completion
- * Handles command routing and permissions
- * 
+ * 🛡️ AetherGuard Command Manager 
+ *
+ * Manages all anti-cheat commands and tab completion.
+ * Handles command routing and permissions.
+ *
  * @author AetherGuard Team
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class CommandManager implements CommandExecutor, TabCompleter {
     

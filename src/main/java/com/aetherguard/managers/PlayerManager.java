@@ -140,10 +140,41 @@ public class PlayerManager {
     }
     
     /**
-     * Save all player data
+     * Save all player data to persistent storage
      */
     public void saveAllData() {
-        // TODO: Implement data saving
+        try {
+            java.io.File dataDir = new java.io.File(plugin.getDataFolder(), "player-data");
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
+            }
+            
+            for (Map.Entry<UUID, PlayerData> entry : playerData.entrySet()) {
+                savePlayerData(entry.getValue(), dataDir);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to save player data: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Save individual player data
+     */
+    private void savePlayerData(PlayerData data, java.io.File dataDir) {
+        try {
+            java.io.File file = new java.io.File(dataDir, data.uuid + ".json");
+            StringBuilder json = new StringBuilder("{");
+            json.append("\"uuid\":\"").append(data.uuid).append("\",");
+            json.append("\"name\":\"").append(data.name).append("\",");
+            json.append("\"totalViolations\":").append(data.totalViolations).append(",");
+            json.append("\"lastViolationTime\":").append(data.lastViolationTime).append(",");
+            json.append("\"joinTime\":").append(data.joinTime);
+            json.append("}");
+            
+            java.nio.file.Files.write(file.toPath(), json.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            plugin.getLogger().fine("Failed to save data for " + data.uuid + ": " + e.getMessage());
+        }
     }
     
     /**
@@ -169,6 +200,7 @@ public class PlayerManager {
         private final long joinTime;
         private long lastViolationTime;
         private long totalViolations;
+        private boolean frozen;
         private final Map<String, Long> checkViolations;
         private final Map<String, Object> customData;
         
@@ -178,11 +210,11 @@ public class PlayerManager {
             this.joinTime = System.currentTimeMillis();
             this.lastViolationTime = 0;
             this.totalViolations = 0;
+            this.frozen = false;
             this.checkViolations = new HashMap<>();
             this.customData = new HashMap<>();
         }
         
-        // Getters and setters
         public UUID getUuid() { return uuid; }
         public String getName() { return name; }
         public long getJoinTime() { return joinTime; }
@@ -190,6 +222,8 @@ public class PlayerManager {
         public void setLastViolationTime(long lastViolationTime) { this.lastViolationTime = lastViolationTime; }
         public long getTotalViolations() { return totalViolations; }
         public void setTotalViolations(long totalViolations) { this.totalViolations = totalViolations; }
+        public boolean isFrozen() { return frozen; }
+        public void setFrozen(boolean frozen) { this.frozen = frozen; }
         public Map<String, Long> getCheckViolations() { return checkViolations; }
         public Map<String, Object> getCustomData() { return customData; }
     }

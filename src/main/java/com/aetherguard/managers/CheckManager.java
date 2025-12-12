@@ -3,18 +3,29 @@ package com.aetherguard.managers;
 import com.aetherguard.checks.*;
 import com.aetherguard.config.ConfigManager;
 import com.aetherguard.core.AetherGuard;
+import com.aetherguard.checks.Check;
+import com.aetherguard.checks.CheckType;
+import com.aetherguard.checks.automation.*;
+import com.aetherguard.checks.combat.*;
+import com.aetherguard.checks.exploits.*;
 import com.aetherguard.checks.movement.*;
 import com.aetherguard.checks.combat.*;
+import com.aetherguard.checks.packets.*;
 import com.aetherguard.checks.world.*;
 import com.aetherguard.checks.packets.*;
 import com.aetherguard.checks.exploits.*;
 import com.aetherguard.checks.automation.*;
 import com.aetherguard.checks.heuristics.*;
 import com.aetherguard.checks.ml.*;
+import com.aetherguard.core.AetherGuard;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 🛡️ AetherGuard Check Manager
@@ -23,6 +34,10 @@ import java.util.logging.Level;
  * Handles check registration, configuration, and execution order
  * Supports 100+ checks across all categories
  * 
+ *
+ * Manages all anti-cheat checks, including registration,
+ * enabling/disabling, and configuration.
+ *
  * @author AetherGuard Team
  * @version 1.0.0
  */
@@ -31,19 +46,18 @@ public class CheckManager {
     private final AetherGuard plugin;
     private final ConfigManager configManager;
     
-    // Check storage
     private final Map<String, Map<String, Map<String, Check>>> checks;
     private final List<Check> allChecks;
     private final Map<String, Check> checkRegistry;
+    private final Map<String, Check> flatChecks;
+    private final Map<CheckType, List<Check>> checksByType;
     
-    // Check categories
     private final Set<String> enabledCategories;
     private final Map<String, Integer> categoryPriorities;
     
-    // Statistics
     private int totalChecks;
     private final Map<String, Integer> checkStats;
-    
+
     public CheckManager(AetherGuard plugin) {
         this.plugin = plugin;
         this.configManager = plugin.getConfigManager();
@@ -51,6 +65,8 @@ public class CheckManager {
         this.checks = new ConcurrentHashMap<>();
         this.allChecks = new ArrayList<>();
         this.checkRegistry = new ConcurrentHashMap<>();
+        this.flatChecks = new HashMap<>();
+        this.checksByType = new HashMap<>();
         this.enabledCategories = new HashSet<>();
         this.categoryPriorities = new HashMap<>();
         this.checkStats = new ConcurrentHashMap<>();
@@ -62,43 +78,22 @@ public class CheckManager {
         plugin.getLogger().info("§7Check Manager initialized with §f" + totalChecks + " §7checks");
     }
     
-    /**
-     * Initialize all checks
-     */
     private void initializeChecks() {
-        // Initialize movement checks
         initializeMovementChecks();
-        
-        // Initialize combat checks
         initializeCombatChecks();
-        
-        // Initialize world checks
         initializeWorldChecks();
-        
-        // Initialize packet checks
         initializePacketChecks();
-        
-        // Initialize exploit checks
         initializeExploitChecks();
-        
-        // Initialize automation checks
         initializeAutomationChecks();
-        
-        // Initialize heuristic checks
         initializeHeuristicChecks();
         
-        // Initialize ML checks (optional)
         if (configManager.getMainConfig().getBoolean("machine-learning.enabled", false)) {
             initializeMLChecks();
         }
         
-        // Calculate total checks
         calculateTotalChecks();
     }
     
-    /**
-     * Initialize movement checks
-     */
     private void initializeMovementChecks() {
         Map<String, Map<String, Check>> movement = new HashMap<>();
         
@@ -119,13 +114,9 @@ public class CheckManager {
         checks.put("movement", movement);
     }
     
-    /**
-     * Initialize combat checks
-     */
     private void initializeCombatChecks() {
         Map<String, Map<String, Check>> combat = new HashMap<>();
         
-        // KillAura checks
         Map<String, Check> killaura = new HashMap<>();
         killaura.put("A", new KillAuraA(plugin, "combat", "killaura", "A"));
         killaura.put("B", new KillAuraB(plugin, "combat", "killaura", "B"));
@@ -141,7 +132,6 @@ public class CheckManager {
         killaura.put("L", new KillAuraL(plugin, "combat", "killaura", "L"));
         combat.put("killaura", killaura);
         
-        // Reach checks
         Map<String, Check> reach = new HashMap<>();
         reach.put("A", new ReachA(plugin, "combat", "reach", "A"));
         reach.put("B", new ReachB(plugin, "combat", "reach", "B"));
@@ -155,53 +145,38 @@ public class CheckManager {
         checks.put("combat", combat);
     }
     
-    /**
-     * Initialize world checks
-     */
     private void initializeWorldChecks() {
         Map<String, Map<String, Check>> world = new HashMap<>();
         checks.put("world", world);
     }
     
-    /**
-     * Initialize packet checks
-     */
     private void initializePacketChecks() {
         Map<String, Map<String, Check>> packets = new HashMap<>();
         
-        // BadPackets checks A-Z
         Map<String, Check> badpackets = new HashMap<>();
         for (char c = 'A'; c <= 'Z'; c++) {
             String className = "com.aetherguard.checks.packets.BadPackets" + c;
             try {
                 Class<?> clazz = Class.forName(className);
-                Check check = (Check) clazz.getConstructor(AetherGuard.class, String.class, String.class, String.class, String.class)
+                Check check = (Check) clazz.getConstructor(AetherGuard.class, String.class, String.class, String.class)
                     .newInstance(plugin, "packets", "badpackets", String.valueOf(c));
                 badpackets.put(String.valueOf(c), check);
             } catch (Exception e) {
-                plugin.getLogger().warning("§cCould not initialize check BadPackets" + c + ": " + e.getMessage());
+                plugin.getLogger().warning("§cCould not initialize check BadPackets" + c);
             }
         }
         packets.put("badpackets", badpackets);
-        
         checks.put("packets", packets);
     }
     
-    /**
-     * Initialize exploit checks
-     */
     private void initializeExploitChecks() {
         Map<String, Map<String, Check>> exploits = new HashMap<>();
         checks.put("exploits", exploits);
     }
     
-    /**
-     * Initialize automation checks
-     */
     private void initializeAutomationChecks() {
         Map<String, Map<String, Check>> automation = new HashMap<>();
         
-        // AutoClicker checks
         Map<String, Check> autoclicker = new HashMap<>();
         autoclicker.put("A", new AutoClickerA(plugin, "automation", "autoclicker", "A"));
         autoclicker.put("B", new AutoClickerB(plugin, "automation", "autoclicker", "B"));
@@ -211,7 +186,6 @@ public class CheckManager {
         autoclicker.put("F", new AutoClickerF(plugin, "automation", "autoclicker", "F"));
         automation.put("autoclicker", autoclicker);
         
-        // FastBreak checks
         Map<String, Check> fastbreak = new HashMap<>();
         fastbreak.put("A", new FastBreakA(plugin, "automation", "fastbreak", "A"));
         fastbreak.put("B", new FastBreakB(plugin, "automation", "fastbreak", "B"));
@@ -221,7 +195,6 @@ public class CheckManager {
         fastbreak.put("F", new FastBreakF(plugin, "automation", "fastbreak", "F"));
         automation.put("fastbreak", fastbreak);
         
-        // FastPlace checks
         Map<String, Check> fastplace = new HashMap<>();
         fastplace.put("A", new FastPlaceA(plugin, "automation", "fastplace", "A"));
         fastplace.put("B", new FastPlaceB(plugin, "automation", "fastplace", "B"));
@@ -233,74 +206,46 @@ public class CheckManager {
         checks.put("automation", automation);
     }
     
-    /**
-     * Initialize heuristic checks
-     */
     private void initializeHeuristicChecks() {
         Map<String, Map<String, Check>> heuristics = new HashMap<>();
         checks.put("heuristics", heuristics);
     }
     
-    /**
-     * Initialize ML checks
-     */
     private void initializeMLChecks() {
         Map<String, Map<String, Check>> ml = new HashMap<>();
         checks.put("ml", ml);
     }
     
-    /**
-     * Load check configuration
-     */
     private void loadCheckConfiguration() {
-        // Load enabled categories
-        for (String category : checks.keySet()) {
+        for (Map.Entry<String, Map<String, Map<String, Check>>> categoryEntry : checks.entrySet()) {
+            String category = categoryEntry.getKey();
             if (configManager.isCategoryEnabled(category)) {
                 enabledCategories.add(category);
                 int priority = configManager.getCategoryPriority(category);
                 categoryPriorities.put(category, priority);
             }
-        }
-        
-        // Load check configurations
-        for (Map.Entry<String, Map<String, Map<String, Check>>> categoryEntry : checks.entrySet()) {
-            String category = categoryEntry.getKey();
+            
             for (Map.Entry<String, Map<String, Check>> checkEntry : categoryEntry.getValue().entrySet()) {
                 String checkName = checkEntry.getKey();
                 for (Map.Entry<String, Check> typeEntry : checkEntry.getValue().entrySet()) {
                     String type = typeEntry.getKey();
                     Check check = typeEntry.getValue();
                     
-                    // Load configuration
                     ConfigManager.CheckConfig config = configManager.getCheckConfig(category, checkName, type);
                     check.setConfig(config);
                     
-                    // Add to registry
                     String fullName = category + "." + checkName + "." + type;
                     checkRegistry.put(fullName, check);
+                    flatChecks.put(fullName.toLowerCase(), check);
                     allChecks.add(check);
-                    
-                    // Initialize stats
                     checkStats.put(fullName, 0);
+                    
+                    checksByType.computeIfAbsent(check.getCheckType(), k -> new ArrayList<>()).add(check);
                 }
             }
         }
     }
     
-    /**
-     * Sort checks by priority
-     */
-    private void sortChecksByPriority() {
-        allChecks.sort((c1, c2) -> {
-            int priority1 = categoryPriorities.getOrDefault(c1.getCategory(), 1);
-            int priority2 = categoryPriorities.getOrDefault(c2.getCategory(), 1);
-            return Integer.compare(priority1, priority2);
-        });
-    }
-    
-    /**
-     * Calculate total checks
-     */
     private void calculateTotalChecks() {
         totalChecks = 0;
         for (Map<String, Map<String, Check>> category : checks.values()) {
@@ -310,11 +255,20 @@ public class CheckManager {
         }
     }
     
-    /**
-     * Get check by full name
-     */
+    private void sortChecksByPriority() {
+        allChecks.sort((c1, c2) -> {
+            int priority1 = categoryPriorities.getOrDefault(c1.getCategory(), 1);
+            int priority2 = categoryPriorities.getOrDefault(c2.getCategory(), 1);
+            return Integer.compare(priority1, priority2);
+        });
+    }
+    
     public Check getCheck(String fullName) {
         return checkRegistry.get(fullName);
+    }
+    
+    public List<Check> getChecksByType(CheckType type) {
+        return checksByType.getOrDefault(type, new ArrayList<>());
     }
     
     /**
@@ -362,6 +316,15 @@ public class CheckManager {
      */
     public List<Check> getAllChecks() {
         return new ArrayList<>(allChecks);
+    }
+    
+    public Map<String, Check> getAllChecksMap() {
+        return new HashMap<>(flatChecks);
+    }
+    
+    public void reloadChecks() {
+        plugin.getLogger().info("Reloading check configurations...");
+        reloadCheckConfigurations();
     }
     
     /**

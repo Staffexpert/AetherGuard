@@ -191,16 +191,29 @@ public class ActionManager {
     }
     
     /**
-     * Handle FREEZE action
+     * Handle FREEZE action - Prevents player movement for specified duration
      */
     private void handleFreeze(Player player, ActionInfo action, Check check, CheckResult result) {
         long duration = parseDuration(action.getParameter());
         if (duration <= 0) {
-            duration = 30; // Default 30 seconds
+            duration = 30;
         }
         
-        // TODO: Implement freeze functionality
-        plugin.getLogger().info("§cFroze player " + player.getName() + " for " + duration + " seconds");
+        plugin.getPlayerManager().getPlayerData(player).setFrozen(true);
+        
+        org.bukkit.Location frozenLoc = player.getLocation();
+        player.teleport(frozenLoc);
+        player.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
+        
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (player.isOnline()) {
+                plugin.getPlayerManager().getPlayerData(player).setFrozen(false);
+                player.sendMessage("§a§lAetherGuard §7» §aYou have been unfrozen");
+            }
+        }, duration * 20);
+        
+        player.sendMessage("§c§lAetherGuard §7» §cYou have been frozen for " + duration + " seconds");
+        plugin.getLogger().warning("§cFroze player " + player.getName() + " for " + duration + " seconds");
     }
     
     /**
@@ -222,7 +235,7 @@ public class ActionManager {
     }
     
     /**
-     * Handle LOG action
+     * Handle LOG action - Write violation to log file
      */
     private void handleLog(Player player, ActionInfo action, Check check, CheckResult result) {
         String logMessage = String.format(
@@ -236,16 +249,85 @@ public class ActionManager {
         );
         
         plugin.getLogger().info("§7[LOG] " + logMessage);
-        
-        // TODO: Write to log file
+        writeToLogFile(logMessage, player, check);
     }
     
     /**
-     * Handle WEBHOOK action
+     * Write violation to persistent log file
+     */
+    private void writeToLogFile(String logMessage, Player player, Check check) {
+        try {
+            java.io.File logsDir = new java.io.File(plugin.getDataFolder(), "logs");
+            if (!logsDir.exists()) {
+                logsDir.mkdirs();
+            }
+            
+            String date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+            java.io.File logFile = new java.io.File(logsDir, "violations-" + date + ".log");
+            
+            java.io.FileWriter writer = new java.io.FileWriter(logFile, true);
+            writer.write(logMessage + "\n");
+            writer.close();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to write to log file: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Handle WEBHOOK action - Send violation to Discord/webhook
      */
     private void handleWebhook(Player player, ActionInfo action, Check check, CheckResult result) {
-        // TODO: Implement webhook functionality
-        plugin.getLogger().info("§7[WEBHOOK] Would send webhook for " + player.getName());
+        String webhookUrl = action.getParameter();
+        if (webhookUrl == null || webhookUrl.isEmpty()) {
+            return;
+        }
+        
+        plugin.getExecutorService().submit(() -> {
+            try {
+                String payload = buildWebhookPayload(player, check, result);
+                sendWebhook(webhookUrl, payload);
+                plugin.getLogger().info("§7[WEBHOOK] Sent violation report for " + player.getName());
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to send webhook: " + e.getMessage());
+            }
+        });
+    }
+    
+    /**
+     * Build Discord webhook JSON payload
+     */
+    private String buildWebhookPayload(Player player, Check check, CheckResult result) {
+        StringBuilder json = new StringBuilder("{");
+        json.append("\"embeds\":[{");
+        json.append("\"title\":\"Violation Alert\",");
+        json.append("\"description\":\"Player flagged by anti-cheat\",");
+        json.append("\"color\":16711680,");
+        json.append("\"fields\":[");
+        json.append("{\"name\":\"Player\",\"value\":\"").append(player.getName()).append("\",\"inline\":true},");
+        json.append("{\"name\":\"UUID\",\"value\":\"").append(player.getUniqueId()).append("\",\"inline\":true},");
+        json.append("{\"name\":\"Check\",\"value\":\"").append(check.getFullName()).append("\",\"inline\":false},");
+        json.append("{\"name\":\"Reason\",\"value\":\"").append(result.getReason()).append("\",\"inline\":false},");
+        json.append("{\"name\":\"Confidence\",\"value\":\"").append(String.format("%.2f", result.getConfidence())).append("%\",\"inline\":true}");
+        json.append("]}]}");
+        return json.toString();
+    }
+    
+    /**
+     * Send webhook to URL
+     */
+    private void sendWebhook(String webhookUrl, String payload) throws Exception {
+        java.net.URL url = new java.net.URL(webhookUrl);
+        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+        
+        try (java.io.OutputStream os = conn.getOutputStream()) {
+            os.write(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+        
+        conn.getResponseCode();
+        conn.disconnect();
     }
     
     /**

@@ -7,6 +7,7 @@ import com.aetherguard.listeners.PacketListener;
 import com.aetherguard.listeners.PlayerListener;
 import com.aetherguard.managers.*;
 import com.aetherguard.api.AetherGuardAPI;
+import com.aetherguard.security.AntiDisablerSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,6 +45,9 @@ public class AetherGuard extends JavaPlugin {
     private ActionManager actionManager;
     private CommandManager commandManager;
     private GUIManager guiManager;
+    
+    // Security system
+    private AntiDisablerSystem antiDisablerSystem;
     
     // API instance
     private AetherGuardAPI api;
@@ -142,6 +146,9 @@ public class AetherGuard extends JavaPlugin {
         commandManager = new CommandManager(this);
         guiManager = new GUIManager(this);
         
+        // Initialize security systems
+        antiDisablerSystem = new AntiDisablerSystem(this);
+        
         // Initialize API
         api = new AetherGuardAPI(this);
         
@@ -208,15 +215,64 @@ public class AetherGuard extends JavaPlugin {
     }
     
     /**
-     * Check for updates (placeholder)
+     * Check for updates from GitHub releases
      */
     private void checkForUpdates() {
         if (getConfig().getBoolean("update-checker", true)) {
             executorService.submit(() -> {
-                // TODO: Implement update checker
-                getLogger().info("§7Update check completed");
+                try {
+                    String currentVersion = getDescription().getVersion();
+                    String latestVersion = fetchLatestVersion();
+                    
+                    if (latestVersion != null && !latestVersion.equals(currentVersion)) {
+                        getLogger().warning("§e§l[UPDATE] §eA new version is available!");
+                        getLogger().warning("§e§l[UPDATE] §eCurrent: §f" + currentVersion);
+                        getLogger().warning("§e§l[UPDATE] §eLatest: §f" + latestVersion);
+                        getLogger().warning("§e§l[UPDATE] §eDownload at: §fhttps://github.com/Staffexpert/AetherGuard-AntiCheat/releases");
+                    } else {
+                        getLogger().info("§7You are running the latest version of AetherGuard");
+                    }
+                } catch (Exception e) {
+                    getLogger().fine("Update check failed: " + e.getMessage());
+                }
             });
         }
+    }
+    
+    /**
+     * Fetch latest version from GitHub API
+     */
+    private String fetchLatestVersion() {
+        try {
+            java.net.URL url = new java.net.URL("https://api.github.com/repos/Staffexpert/AetherGuard-AntiCheat/releases/latest");
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            conn.setRequestProperty("User-Agent", "AetherGuard-AntiCheat");
+            
+            if (conn.getResponseCode() == 200) {
+                java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(conn.getInputStream())
+                );
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+                
+                String jsonResponse = response.toString();
+                int tagIndex = jsonResponse.indexOf("\"tag_name\":\"");
+                if (tagIndex != -1) {
+                    int startIndex = tagIndex + 12;
+                    int endIndex = jsonResponse.indexOf("\"", startIndex);
+                    return jsonResponse.substring(startIndex, endIndex);
+                }
+            }
+        } catch (Exception e) {
+            getLogger().fine("Failed to fetch version: " + e.getMessage());
+        }
+        return null;
     }
     
     // Getters
@@ -258,6 +314,10 @@ public class AetherGuard extends JavaPlugin {
     
     public ScheduledExecutorService getExecutorService() {
         return executorService;
+    }
+    
+    public AntiDisablerSystem getAntiDisablerSystem() {
+        return antiDisablerSystem;
     }
     
     // State management

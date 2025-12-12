@@ -163,6 +163,14 @@ public class ConfigManager {
     }
     
     /**
+     * Save the main configuration file
+     */
+    public void saveMainConfig() {
+        saveConfig("config");
+        plugin.saveConfig();
+    }
+    
+    /**
      * Get configuration by name
      */
     public FileConfiguration getConfig(String name) {

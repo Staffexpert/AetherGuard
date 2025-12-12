@@ -1,274 +1,135 @@
 package com.aetherguard.managers;
 
-import com.aetherguard.checks.Check;
-import com.aetherguard.checks.CheckResult;
 import com.aetherguard.core.AetherGuard;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 🛡️ AetherGuard Violation Manager
- * 
- * Manages violation tracking and handling
- * Handles violation decay and punishment thresholds
- * 
- * @author AetherGuard Team
- * @version 1.0.0
- */
 public class ViolationManager {
-    
+
+    public static class Violation {
+        public final String playerName;
+        public final String checkInfo;
+        public final String details;
+        public final String timestamp;
+
+        public Violation(Player player, String checkInfo, String details) {
+            this.playerName = player.getName();
+            this.checkInfo = checkInfo;
+            this.details = details;
+            this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        }
+    }
+
+    public static class ViolationData {
+        public final String checkName;
+        public final long violations;
+        
+        public ViolationData(String checkName, long violations) {
+            this.checkName = checkName;
+            this.violations = violations;
+        }
+        
+        public long getViolations() {
+            return violations;
+        }
+    }
+
+    public static class ViolationStats {
+        public final long totalViolations;
+        public final long totalPlayers;
+        public final Map<String, Long> checkViolations;
+        
+        public ViolationStats(long totalViolations, Map<String, Long> checkViolations) {
+            this.totalViolations = totalViolations;
+            this.checkViolations = new HashMap<>(checkViolations);
+            this.totalPlayers = checkViolations.size();
+        }
+        
+        public long getTotalViolations() {
+            return totalViolations;
+        }
+        
+        public long getTotalPlayers() {
+            return totalPlayers;
+        }
+    }
+
     private final AetherGuard plugin;
-    private final Map<UUID, Map<String, ViolationData>> playerViolations;
-    private final Map<UUID, List<ViolationRecord>> violationHistory;
-    
+    private final Deque<Violation> recentViolations;
+    private final Map<Player, Map<String, Long>> playerViolations;
+    private final int maxViolations;
+
     public ViolationManager(AetherGuard plugin) {
         this.plugin = plugin;
+        this.maxViolations = 1000;
+        this.recentViolations = new ArrayDeque<>();
         this.playerViolations = new ConcurrentHashMap<>();
-        this.violationHistory = new ConcurrentHashMap<>();
     }
-    
-    /**
-     * Add violation for player
-     */
-    public void addViolation(Player player, Check check, CheckResult result) {
-        UUID uuid = player.getUniqueId();
-        String checkName = check.getFullName();
-        
-        // Get or create violation data
-        Map<String, ViolationData> violations = playerViolations.computeIfAbsent(uuid, 
-            key -> new ConcurrentHashMap<>());
-        
-        ViolationData violationData = violations.computeIfAbsent(checkName, 
-            key -> new ViolationData(checkName));
-        
-        // Add violation
-        violationData.addViolation(result);
-        
-        // Add to history
-        List<ViolationRecord> history = violationHistory.computeIfAbsent(uuid, 
-            key -> new ArrayList<>());
-        
-        history.add(new ViolationRecord(
-            System.currentTimeMillis(),
-            checkName,
-            result.getReason(),
-            result.getConfidence()
-        ));
-        
-        // Limit history size
-        if (history.size() > 100) {
-            history.remove(0);
+
+    public void addViolation(Violation violation) {
+        if (recentViolations.size() >= maxViolations) {
+            recentViolations.pollLast();
         }
-        
-        // Check if punishment should be triggered
-        if (violationData.getViolations() >= check.getMaxViolations()) {
-            plugin.getActionManager().executeAction(player, check.getPunishment(), check, result);
-            violationData.resetViolations();
-        }
+        recentViolations.offerFirst(violation);
     }
-    
-    /**
-     * Get violations for player
-     */
-    public Map<String, ViolationData> getViolations(Player player) {
-        return playerViolations.getOrDefault(player.getUniqueId(), new HashMap<>());
+
+    public void addViolation(Player player, String checkName) {
+        playerViolations.computeIfAbsent(player, k -> new ConcurrentHashMap<>())
+            .merge(checkName, 1L, Long::sum);
     }
-    
-    /**
-     * Get violations for specific check
-     */
+
+    public Deque<Violation> getRecentViolations() {
+        return new ArrayDeque<>(recentViolations);
+    }
+
+    public long getTotalViolations(Player player) {
+        return playerViolations.getOrDefault(player, new HashMap<>())
+            .values().stream().mapToLong(Long::longValue).sum();
+    }
+
     public ViolationData getViolations(Player player, String checkName) {
-        Map<String, ViolationData> violations = playerViolations.get(player.getUniqueId());
-        return violations != null ? violations.get(checkName) : null;
+        Map<String, Long> violations = playerViolations.getOrDefault(player, new HashMap<>());
+        long count = violations.getOrDefault(checkName, 0L);
+        return new ViolationData(checkName, count);
     }
-    
-    /**
-     * Get total violations for player
-     */
-    public int getTotalViolations(Player player) {
-        Map<String, ViolationData> violations = playerViolations.get(player.getUniqueId());
-        if (violations == null) return 0;
-        
-        return violations.values().stream()
-                .mapToInt(ViolationData::getViolations)
-                .sum();
-    }
-    
-    /**
-     * Get violation history for player
-     */
-    public List<ViolationRecord> getViolationHistory(Player player) {
-        return violationHistory.getOrDefault(player.getUniqueId(), new ArrayList<>());
-    }
-    
-    /**
-     * Reset violations for player
-     */
+
     public void resetViolations(Player player) {
-        UUID uuid = player.getUniqueId();
-        
-        Map<String, ViolationData> violations = playerViolations.get(uuid);
-        if (violations != null) {
-            violations.values().forEach(ViolationData::resetViolations);
-        }
+        playerViolations.remove(player);
     }
-    
-    /**
-     * Reset violations for specific check
-     */
+
     public void resetViolations(Player player, String checkName) {
-        Map<String, ViolationData> violations = playerViolations.get(player.getUniqueId());
+        Map<String, Long> violations = playerViolations.get(player);
         if (violations != null) {
-            ViolationData violationData = violations.get(checkName);
-            if (violationData != null) {
-                violationData.resetViolations();
-            }
+            violations.remove(checkName);
         }
     }
-    
-    /**
-     * Clean up old violations
-     */
-    public void cleanupOldViolations() {
-        long currentTime = System.currentTimeMillis();
-        double decayRate = plugin.getConfigManager().getMainConfig()
-                .getDouble("violation-system.decay-rate", 2.0);
-        
-        playerViolations.forEach((uuid, violations) -> {
-            Player player = plugin.getServer().getPlayer(uuid);
-            if (player == null || !player.isOnline()) {
-                return;
-            }
-            
-            violations.forEach((checkName, violationData) -> {
-                long timeSinceLastViolation = currentTime - violationData.getLastViolationTime();
-                
-                // Decay violations every minute
-                if (timeSinceLastViolation > 60000) {
-                    violationData.decayViolations(decayRate);
-                }
-            });
-            
-            // Remove empty violation data
-            violations.entrySet().removeIf(entry -> entry.getValue().getViolations() <= 0);
-        });
-        
-        // Remove players with no violations
-        playerViolations.entrySet().removeIf(entry -> entry.getValue().isEmpty());
-    }
-    
-    /**
-     * Get violation statistics
-     */
-    public ViolationStats getStats() {
-        int totalPlayers = playerViolations.size();
-        int totalViolations = 0;
-        int activeChecks = 0;
-        
-        for (Map<String, ViolationData> violations : playerViolations.values()) {
-            activeChecks += violations.size();
-            totalViolations += violations.values().stream()
-                    .mapToInt(ViolationData::getViolations)
-                    .sum();
-        }
-        
-        return new ViolationStats(totalPlayers, totalViolations, activeChecks);
-    }
-    
-    /**
-     * Violation data container
-     */
-    public static class ViolationData {
-        private final String checkName;
-        private int violations;
-        private long lastViolationTime;
-        private final List<Long> violationTimes;
-        
-        public ViolationData(String checkName) {
-            this.checkName = checkName;
-            this.violations = 0;
-            this.lastViolationTime = 0;
-            this.violationTimes = new ArrayList<>();
-        }
-        
-        public void addViolation(CheckResult result) {
-            violations++;
-            lastViolationTime = System.currentTimeMillis();
-            violationTimes.add(lastViolationTime);
-            
-            // Keep only recent violations (last 10)
-            if (violationTimes.size() > 10) {
-                violationTimes.remove(0);
-            }
-        }
-        
-        public void decayViolations(double decayRate) {
-            violations = Math.max(0, violations - (int) decayRate);
-        }
-        
-        public void resetViolations() {
-            violations = 0;
-            lastViolationTime = 0;
-            violationTimes.clear();
-        }
-        
-        // Getters
-        public String getCheckName() { return checkName; }
-        public int getViolations() { return violations; }
-        public long getLastViolationTime() { return lastViolationTime; }
-        public List<Long> getViolationTimes() { return new ArrayList<>(violationTimes); }
-    }
-    
-    /**
-     * Violation record for history
-     */
-    public static class ViolationRecord {
-        private final long timestamp;
-        private final String checkName;
-        private final String reason;
-        private final double confidence;
-        
-        public ViolationRecord(long timestamp, String checkName, String reason, double confidence) {
-            this.timestamp = timestamp;
-            this.checkName = checkName;
-            this.reason = reason;
-            this.confidence = confidence;
-        }
-        
-        // Getters
-        public long getTimestamp() { return timestamp; }
-        public String getCheckName() { return checkName; }
-        public String getReason() { return reason; }
-        public double getConfidence() { return confidence; }
-    }
-    
-    /**
-     * Violation statistics
-     */
-    public static class ViolationStats {
-        private final int totalPlayers;
-        private final int totalViolations;
-        private final int activeChecks;
-        
-        public ViolationStats(int totalPlayers, int totalViolations, int activeChecks) {
-            this.totalPlayers = totalPlayers;
-            this.totalViolations = totalViolations;
-            this.activeChecks = activeChecks;
-        }
-        
-        // Getters
-        public int getTotalPlayers() { return totalPlayers; }
-        public int getTotalViolations() { return totalViolations; }
-        public int getActiveChecks() { return activeChecks; }
-    }
-    
-    /**
-     * Cleanup method for resource management
-     */
+
     public void cleanup() {
+        recentViolations.clear();
         playerViolations.clear();
-        violationHistory.clear();
+    }
+
+    public void cleanupOldViolations() {
+        if (playerViolations.size() > 10000) {
+            playerViolations.entrySet().removeIf(e -> !e.getKey().isOnline());
+        }
+    }
+
+    public ViolationStats getStats() {
+        long total = playerViolations.values().stream()
+            .flatMap(m -> m.values().stream())
+            .mapToLong(Long::longValue).sum();
+        
+        Map<String, Long> stats = new HashMap<>();
+        for (Map<String, Long> playerStats : playerViolations.values()) {
+            for (Map.Entry<String, Long> entry : playerStats.entrySet()) {
+                stats.merge(entry.getKey(), entry.getValue(), Long::sum);
+            }
+        }
+        return new ViolationStats(total, stats);
     }
 }
