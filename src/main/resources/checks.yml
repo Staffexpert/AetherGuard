@@ -1,0 +1,938 @@
+# 🛡️ AetherGuard Check Configuration
+# Detailed configuration for all anti-cheat checks
+
+# Movement Checks
+movement:
+  fly:
+    # Fly Type A - Basic vertical flight detection
+    A:
+      enabled: true
+      strictness: 1
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Basic vertical flight detection"
+    
+    # Fly Type B - Advanced vertical with compensation
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Advanced vertical flight with latency compensation"
+    
+    # Fly Type C - Ground spoof detection
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Ground spoof detection"
+    
+    # Fly Type D - Air jump detection
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Air jump detection"
+    
+    # Fly Type E - Glide detection
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Glide detection"
+    
+    # Fly Type F - Momentum-based detection
+    F:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Momentum-based flight detection"
+    
+    # Fly Type G - Predictive detection
+    G:
+      enabled: true
+      strictness: 3
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Predictive flight detection"
+
+  speed:
+    # Speed Type A - Basic horizontal speed
+    A:
+      enabled: true
+      strictness: 1
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Basic horizontal speed check"
+    
+    # Speed Type B - Sprint speed
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Sprint speed detection"
+    
+    # Speed Type C - Strafe speed
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Strafe speed detection"
+    
+    # Speed Type D - Air speed
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Air speed detection"
+    
+    # Speed Type E - Water/Lava speed
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Water/Lava speed detection"
+    
+    # Speed Type F - Ice speed
+    F:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Ice speed detection"
+    
+    # Speed Type G - Sneak speed
+    G:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Sneak speed detection"
+    
+    # Speed Type H - Predictive speed
+    H:
+      enabled: true
+      strictness: 3
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Predictive speed detection"
+
+  noslow:
+    # NoSlow Type A - Item usage
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Item usage speed detection"
+    
+    # NoSlow Type B - Blocking
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Blocking speed detection"
+    
+    # NoSlow Type C - Sneaking
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Sneaking speed detection"
+    
+    # NoSlow Type D - Web/honey block
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Web/honey block speed detection"
+    
+    # NoSlow Type E - Soul sand
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Soul sand speed detection"
+
+  step:
+    # Step Type A - Basic step height
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Basic step height check"
+    
+    # Step Type B - Air step
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Air step detection"
+    
+    # Step Type C - Velocity step
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Velocity step detection"
+    
+    # Step Type D - Liquid step
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Liquid step detection"
+
+  jesus:
+    # Jesus Type A - Water walk
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Water walk detection"
+    
+    # Jesus Type B - Lava walk
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Lava walk detection"
+    
+    # Jesus Type C - Surface tension
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Surface tension detection"
+
+# Combat Checks
+combat:
+  killaura:
+    # KillAura Type A - Multi attack
+    A:
+      enabled: true
+      strictness: 3
+      max-violations: 20
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Multi attack detection"
+    
+    # KillAura Type B - Rotation
+    B:
+      enabled: true
+      strictness: 3
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Invalid rotation detection"
+    
+    # KillAura Type C - Target switch
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Target switch detection"
+    
+    # KillAura Type D - Attack timing
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 18
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Attack timing detection"
+    
+    # KillAura Type E - Wall attack
+    E:
+      enabled: true
+      strictness: 3
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Wall attack detection"
+    
+    # KillAura Type F - Self damage
+    F:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Self damage detection"
+    
+    # KillAura Type G - Critical abuse
+    G:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Critical abuse detection"
+    
+    # KillAura Type H - Auto block
+    H:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Auto block detection"
+    
+    # KillAura Type I - No swing
+    I:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "No swing detection"
+    
+    # KillAura Type J - Reach abuse
+    J:
+      enabled: true
+      strictness: 3
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Reach abuse detection"
+    
+    # KillAura Type K - Aim patterns
+    K:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Aim pattern detection"
+    
+    # KillAura Type L - Predictive detection
+    L:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Predictive KillAura detection"
+
+  reach:
+    # Reach Type A - Distance check
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Basic distance check"
+    
+    # Reach Type B - Latency compensated
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Latency compensated check"
+    
+    # Reach Type C - Predictive
+    C:
+      enabled: true
+      strictness: 3
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Predictive reach check"
+    
+    # Reach Type D - Block interactions
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Block interaction reach"
+    
+    # Reach Type E - Entity reach
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Entity reach detection"
+    
+    # Reach Type F - Combined reach
+    F:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Combined reach analysis"
+    
+    # Reach Type G - 3D reach
+    G:
+      enabled: true
+      strictness: 3
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "3D reach calculation"
+
+  autoclicker:
+    # AutoClicker Type A - CPS analysis
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 20
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "CPS analysis"
+    
+    # AutoClicker Type B - Pattern detection
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Click pattern detection"
+    
+    # AutoClicker Type C - Consistency check
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Consistency detection"
+    
+    # AutoClicker Type D - Burst detection
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 18
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Burst detection"
+    
+    # AutoClicker Type E - Double click
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Double click detection"
+    
+    # AutoClicker Type F - ML enhanced
+    F:
+      enabled: false
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Machine learning enhanced"
+
+# World Checks
+world:
+  fastbreak:
+    # FastBreak Type A - Speed check
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 20
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Break speed check"
+    
+    # FastBreak Type B - InstaBreak
+    B:
+      enabled: true
+      strictness: 3
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Instant break detection"
+    
+    # FastBreak Type C - Wrong tool
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Wrong tool speed"
+    
+    # FastBreak Type D - Multi block
+    D:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Multi block break"
+    
+    # FastBreak Type E - Predictive
+    E:
+      enabled: true
+      strictness: 3
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Predictive break detection"
+    
+    # FastBreak Type F - Rotation based
+    F:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Rotation based detection"
+
+  fastplace:
+    # FastPlace Type A - Speed check
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 25
+      buffer-size: 8
+      punishment: "FLAG"
+      description: "Place speed check"
+    
+    # FastPlace Type B - No swing
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "No swing detection"
+    
+    # FastPlace Type C - Rotation check
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Rotation detection"
+    
+    # FastPlace Type D - Block spam
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 20
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Block spam detection"
+    
+    # FastPlace Type E - Predictive
+    E:
+      enabled: true
+      strictness: 3
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Predictive placement"
+
+  scaffold:
+    # Scaffold Type A - Tower detection
+    A:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Tower detection"
+    
+    # Scaffold Type B - Rotation
+    B:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Scaffold rotation"
+    
+    # Scaffold Type C - Timing
+    C:
+      enabled: true
+      strictness: 2
+      max-violations: 18
+      buffer-size: 6
+      punishment: "FLAG"
+      description: "Place timing"
+    
+    # Scaffold Type D - Speed
+    D:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Scaffold speed"
+    
+    # Scaffold Type E - Bridge
+    E:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Bridge detection"
+    
+    # Scaffold Type F - God bridge
+    F:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "God bridge detection"
+    
+    # Scaffold Type G - Sneak scaffold
+    G:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Sneak scaffold"
+    
+    # Scaffold Type H - Predictive
+    H:
+      enabled: true
+      strictness: 3
+      max-violations: 6
+      buffer-size: 2
+      punishment: "FLAG"
+      description: "Predictive scaffold"
+
+# Packet Checks
+packets:
+  badpackets:
+    # BadPackets A-Z - Various packet exploits
+    A:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid position packet"
+    
+    B:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid look packet"
+    
+    C:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid arm animation"
+    
+    D:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid entity action"
+    
+    E:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid block place"
+    
+    F:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid block dig"
+    
+    G:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid held item change"
+    
+    H:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid creative action"
+    
+    I:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid window click"
+    
+    J:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid transaction"
+    
+    K:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      punishment: "FLAG"
+      description: "Invalid chat message"
+    
+    L:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid entity interaction"
+    
+    M:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid use entity"
+    
+    N:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid keep alive"
+    
+    O:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid position look"
+    
+    P:
+      enabled: true
+      strictness: 2
+      max-violations: 15
+      buffer-size: 5
+      punishment: "FLAG"
+      description: "Invalid flying"
+    
+    Q:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid tab complete"
+    
+    R:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid resource pack status"
+    
+    S:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid abilities"
+    
+    T:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid settings"
+    
+    U:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid custom payload"
+    
+    V:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid vehicle move"
+    
+    W:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid steer vehicle"
+    
+    X:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid craft request"
+    
+    Y:
+      enabled: true
+      strictness: 3
+      max-violations: 8
+      buffer-size: 3
+      punishment: "FLAG"
+      description: "Invalid enchant item"
+    
+    Z:
+      enabled: true
+      strictness: 3
+      max-violations: 5
+      buffer-size: 2
+      punishment: "KICK"
+      description: "Invalid beaçon"
+
+# Check Profiles
+profiles:
+  low:
+    description: "Low detection profile - minimal false positives"
+    strictness-multiplier: 0.5
+    vl-multiplier: 1.5
+    buffer-multiplier: 2.0
+  
+  medium:
+    description: "Medium detection profile - balanced detection"
+    strictness-multiplier: 1.0
+    vl-multiplier: 1.0
+    buffer-multiplier: 1.0
+  
+  strict:
+    description: "Strict detection profile - high detection"
+    strictness-multiplier: 1.5
+    vl-multiplier: 0.8
+    buffer-multiplier: 0.7
+  
+  ultra:
+    description: "Ultra detection profile - maximum detection"
+    strictness-multiplier: 2.0
+    vl-multiplier: 0.6
+    buffer-multiplier: 0.5
+
+# Check Categories
+categories:
+  movement:
+    enabled: true
+    description: "Movement-related checks"
+    priority: 1
+  
+  combat:
+    enabled: true
+    description: "Combat-related checks"
+    priority: 2
+  
+  world:
+    enabled: true
+    description: "World interaction checks"
+    priority: 3
+  
+  packets:
+    enabled: true
+    description: "Packet-related checks"
+    priority: 4
+  
+  exploits:
+    enabled: true
+    description: "Exploit-related checks"
+    priority: 5
+  
+  automation:
+    enabled: true
+    description: "Automation-related checks"
+    priority: 6
+  
+  heuristics:
+    enabled: true
+    description: "Heuristic analysis checks"
+    priority: 7
+  
+  ml:
+    enabled: false
+    description: "Machine learning checks"
+    priority: 8

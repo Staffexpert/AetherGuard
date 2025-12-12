@@ -1,0 +1,337 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.aetherguard:AetherGuard >---------------------
+[INFO] Building AetherGuard 1.0.0-RELEASE
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ AetherGuard ---
+[INFO] Deleting c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ AetherGuard ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ AetherGuard ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 44 source files to c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\target\classes
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/ActionManager.java: Some input files use or override a deprecated API.
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/ActionManager.java: Recompile with -Xlint:deprecation for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[143,28] cannot find symbol
+  symbol:   class ReachC
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[144,28] cannot find symbol
+  symbol:   class ReachD
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[145,28] cannot find symbol
+  symbol:   class ReachE
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[146,28] cannot find symbol
+  symbol:   class ReachF
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[147,28] cannot find symbol
+  symbol:   class ReachG
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[152,34] cannot find symbol
+  symbol:   class AutoClickerA
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[153,34] cannot find symbol
+  symbol:   class AutoClickerB
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[154,34] cannot find symbol
+  symbol:   class AutoClickerC
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[155,34] cannot find symbol
+  symbol:   class AutoClickerD
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[156,34] cannot find symbol
+  symbol:   class AutoClickerE
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[157,34] cannot find symbol
+  symbol:   class AutoClickerF
+  location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[57,29] cannot find symbol
+  symbol:   class ReloadCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[58,29] cannot find symbol
+  symbol:   class ToggleCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[59,29] cannot find symbol
+  symbol:   class VerboseCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[60,29] cannot find symbol
+  symbol:   class AlertsCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[61,29] cannot find symbol
+  symbol:   class DebugCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[62,29] cannot find symbol
+  symbol:   class ProfileCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[63,29] cannot find symbol
+  symbol:   class ExemptCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[64,29] cannot find symbol
+  symbol:   class PunishCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[67,29] cannot find symbol
+  symbol:   class StatsCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[68,29] cannot find symbol
+  symbol:   class PingCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[69,29] cannot find symbol
+  symbol:   class VLCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[70,29] cannot find symbol
+  symbol:   class TPSCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[73,29] cannot find symbol
+  symbol:   class FreezeCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[74,29] cannot find symbol
+  symbol:   class LogsCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[75,29] cannot find symbol
+  symbol:   class HistoryCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[76,29] cannot find symbol
+  symbol:   class TestModeCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[77,29] cannot find symbol
+  symbol:   class CheckCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[80,29] cannot find symbol
+  symbol:   class ProfilerCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[81,29] cannot find symbol
+  symbol:   class PhysicsDebugCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[82,29] cannot find symbol
+  symbol:   class MLCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[83,29] cannot find symbol
+  symbol:   class CheckSuiteCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[84,29] cannot find symbol
+  symbol:   class ActionCommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[87,29] cannot find symbol
+  symbol:   class GUICommand
+  location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[55,37] cannot find symbol
+  symbol:   class MainGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[56,39] cannot find symbol
+  symbol:   class ChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[57,41] cannot find symbol
+  symbol:   class MovementChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[58,39] cannot find symbol
+  symbol:   class CombatChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[59,38] cannot find symbol
+  symbol:   class WorldChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[60,40] cannot find symbol
+  symbol:   class PacketsChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[61,41] cannot find symbol
+  symbol:   class ExploitsChecksGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[62,39] cannot find symbol
+  symbol:   class PlayerGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[63,43] cannot find symbol
+  symbol:   class ViolationsGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[64,40] cannot find symbol
+  symbol:   class HistoryGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[65,39] cannot find symbol
+  symbol:   class ConfigGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[66,40] cannot find symbol
+  symbol:   class ActionsGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[67,41] cannot find symbol
+  symbol:   class ProfilesGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[68,37] cannot find symbol
+  symbol:   class LogsGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[69,38] cannot find symbol
+  symbol:   class StatsGUI
+  location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[70,35] cannot find symbol
+  symbol:   class MLGUI
+  location: class com.aetherguard.managers.GUIManager
+[INFO] 50 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.628 s
+[INFO] Finished at: 2025-12-11T20:58:53-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project AetherGuard: Compilation failure: Compilation failure: 
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[143,28] cannot find symbol
+[ERROR]   symbol:   class ReachC
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[144,28] cannot find symbol
+[ERROR]   symbol:   class ReachD
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[145,28] cannot find symbol
+[ERROR]   symbol:   class ReachE
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[146,28] cannot find symbol
+[ERROR]   symbol:   class ReachF
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[147,28] cannot find symbol
+[ERROR]   symbol:   class ReachG
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[152,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerA
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[153,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerB
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[154,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerC
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[155,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerD
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[156,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerE
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CheckManager.java:[157,34] cannot find symbol
+[ERROR]   symbol:   class AutoClickerF
+[ERROR]   location: class com.aetherguard.managers.CheckManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[57,29] cannot find symbol
+[ERROR]   symbol:   class ReloadCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[58,29] cannot find symbol
+[ERROR]   symbol:   class ToggleCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[59,29] cannot find symbol
+[ERROR]   symbol:   class VerboseCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[60,29] cannot find symbol
+[ERROR]   symbol:   class AlertsCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[61,29] cannot find symbol
+[ERROR]   symbol:   class DebugCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[62,29] cannot find symbol
+[ERROR]   symbol:   class ProfileCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[63,29] cannot find symbol
+[ERROR]   symbol:   class ExemptCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[64,29] cannot find symbol
+[ERROR]   symbol:   class PunishCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[67,29] cannot find symbol
+[ERROR]   symbol:   class StatsCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[68,29] cannot find symbol
+[ERROR]   symbol:   class PingCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[69,29] cannot find symbol
+[ERROR]   symbol:   class VLCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[70,29] cannot find symbol
+[ERROR]   symbol:   class TPSCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[73,29] cannot find symbol
+[ERROR]   symbol:   class FreezeCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[74,29] cannot find symbol
+[ERROR]   symbol:   class LogsCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[75,29] cannot find symbol
+[ERROR]   symbol:   class HistoryCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[76,29] cannot find symbol
+[ERROR]   symbol:   class TestModeCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[77,29] cannot find symbol
+[ERROR]   symbol:   class CheckCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[80,29] cannot find symbol
+[ERROR]   symbol:   class ProfilerCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[81,29] cannot find symbol
+[ERROR]   symbol:   class PhysicsDebugCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[82,29] cannot find symbol
+[ERROR]   symbol:   class MLCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[83,29] cannot find symbol
+[ERROR]   symbol:   class CheckSuiteCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[84,29] cannot find symbol
+[ERROR]   symbol:   class ActionCommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/CommandManager.java:[87,29] cannot find symbol
+[ERROR]   symbol:   class GUICommand
+[ERROR]   location: class com.aetherguard.managers.CommandManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[55,37] cannot find symbol
+[ERROR]   symbol:   class MainGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[56,39] cannot find symbol
+[ERROR]   symbol:   class ChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[57,41] cannot find symbol
+[ERROR]   symbol:   class MovementChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[58,39] cannot find symbol
+[ERROR]   symbol:   class CombatChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[59,38] cannot find symbol
+[ERROR]   symbol:   class WorldChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[60,40] cannot find symbol
+[ERROR]   symbol:   class PacketsChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[61,41] cannot find symbol
+[ERROR]   symbol:   class ExploitsChecksGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[62,39] cannot find symbol
+[ERROR]   symbol:   class PlayerGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[63,43] cannot find symbol
+[ERROR]   symbol:   class ViolationsGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[64,40] cannot find symbol
+[ERROR]   symbol:   class HistoryGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[65,39] cannot find symbol
+[ERROR]   symbol:   class ConfigGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[66,40] cannot find symbol
+[ERROR]   symbol:   class ActionsGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[67,41] cannot find symbol
+[ERROR]   symbol:   class ProfilesGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[68,37] cannot find symbol
+[ERROR]   symbol:   class LogsGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[69,38] cannot find symbol
+[ERROR]   symbol:   class StatsGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/GUIManager.java:[70,35] cannot find symbol
+[ERROR]   symbol:   class MLGUI
+[ERROR]   location: class com.aetherguard.managers.GUIManager
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

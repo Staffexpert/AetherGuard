@@ -1,0 +1,121 @@
+name: AetherGuard
+version: ${project.version}
+main: com.aetherguard.core.AetherGuard
+author: AetherGuard Team
+description: The most complete and advanced open-source anti-cheat for Minecraft
+website: https://github.com/AetherGuard/AetherGuardAntiCheat
+
+# Compatibility
+softdepend: [PlaceholderAPI, LuckPerms, Citizens, WorldGuard, ViaVersion, Vault]
+depend: []
+
+# API version
+api-version: 1.17
+
+# Commands
+commands:
+  aetherguard:
+    description: Main AetherGuard command
+    aliases: [ag, ac, anticheat]
+    usage: /<command>
+    permission: aetherguard.admin
+
+# Permissions
+permissions:
+  aetherguard.*:
+    description: All AetherGuard permissions
+    children:
+      aetherguard.admin: true
+      aetherguard.staff: true
+      aetherguard.player: true
+  
+  aetherguard.admin:
+    description: Administrative permissions
+    children:
+      aetherguard.staff: true
+      aetherguard.reload: true
+      aetherguard.toggle: true
+      aetherguard.debug: true
+      aetherguard.exempt: true
+      aetherguard.punish: true
+      aetherguard.profiler: true
+      aetherguard.checksuite: true
+      aetherguard.config: true
+  
+  aetherguard.staff:
+    description: Staff permissions
+    children:
+      aetherguard.alerts: true
+      aetherguard.verbose: true
+      aetherguard.profile: true
+      aetherguard.logs: true
+      aetherguard.history: true
+      aetherguard.freeze: true
+      aetherguard.stats: true
+      aetherguard.ping: true
+      aetherguard.vl: true
+  
+  aetherguard.player:
+    description: Basic player permissions
+    children:
+      aetherguard.notify: true
+
+  # === Individual Permission Definitions ===
+
+  # --- Admin Permissions ---
+  aetherguard.reload: { description: "Reload AetherGuard configuration", default: op }
+  aetherguard.toggle: { description: "Toggle checks on/off", default: op }
+  aetherguard.exempt: { description: "Exempt players from checks", default: op }
+  aetherguard.punish: { description: "Punish players", default: op }
+  aetherguard.debug: { description: "Debug mode for players", default: op }
+  aetherguard.profiler: { description: "Use profiler", default: op }
+  aetherguard.checksuite: { description: "Check suite management", default: op }
+  aetherguard.config: { description: "Allows editing the configuration", default: op }
+  aetherguard.resetvl: { description: "Reset violation levels", default: op }
+  aetherguard.physicsdebug: { description: "Physics debug", default: op }
+  aetherguard.check: { description: "Manage checks", default: op }
+  aetherguard.action: { description: "Action simulation", default: op }
+  aetherguard.testmode: { description: "Toggle test mode", default: op }
+
+  # --- Staff Permissions ---
+  aetherguard.alerts: { description: "Receive anti-cheat alerts", default: op }
+  aetherguard.verbose: { description: "Enable verbose mode", default: op }
+  aetherguard.profile: { description: "View player profiles", default: op }
+  aetherguard.stats: { description: "View statistics", default: op }
+  aetherguard.screenshare: { description: "Screenshare players", default: op }
+  aetherguard.freeze: { description: "Freeze players", default: op }
+  aetherguard.logs: { description: "View logs", default: op }
+  aetherguard.history: { description: "View player history", default: op }
+  aetherguard.tps: { description: "View TPS", default: op }
+  aetherguard.ping: { description: "View player ping", default: op }
+  aetherguard.vl: { description: "View violation levels", default: op }
+
+  # --- Player Permissions ---
+  aetherguard.notify: { description: "Basic notifications", default: true }
+  aetherguard.bypass:
+    description: Bypass all checks
+    default: false
+
+# Metrics
+metrics:
+  bstats: true
+
+# Update checker
+update-checker: true
+
+# Version compatibility
+supported-versions:
+  - "1.8"
+  - "1.9"
+  - "1.10"
+  - "1.11"
+  - "1.12"
+  - "1.13"
+  - "1.14"
+  - "1.15"
+  - "1.16"
+  - "1.17"
+  - "1.18"
+  - "1.19"
+  - "1.20"
+  - "1.21"

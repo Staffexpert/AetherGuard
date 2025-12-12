@@ -1,0 +1,509 @@
+# 🛡️ AetherGuard AntiCheat Configuration
+# The most complete open-source anti-cheat for Minecraft
+
+# Core Settings
+core:
+  # Detection profile: LOW, MEDIUM, STRICT, ULTRA
+  detection-profile: "MEDIUM"
+  
+  # Enable/disable AetherGuard globally
+  enabled: true
+  
+  # Debug mode for development
+  debug-mode: false
+  
+  # Performance optimization
+  optimization:
+    # Maximum TPS before reducing check intensity
+    min-tps: 18.0
+    
+    # Latency compensation (ms)
+    max-latency: 200
+    
+    # Auto-profiling interval (seconds)
+    profile-interval: 30
+    
+    # Concurrent processing
+    async-processing: true
+    
+    # Thread pool size (0 = auto)
+    thread-pool-size: 0
+
+# Violation System
+violation-system:
+  # Maximum violations before punishment
+  max-violations: 20
+  
+  # Violation decay rate (per minute)
+  decay-rate: 2.0
+  
+  # Buffer system
+  buffer:
+    # Buffer type: FIXED, DYNAMIC, ADAPTIVE
+    type: "DYNAMIC"
+    
+    # Buffer size multiplier
+    size-multiplier: 1.5
+    
+    # Reset buffer on punishment
+    reset-on-punish: true
+
+# Action Manager
+action-manager:
+  # Enable action system
+  enabled: true
+  
+  # Default actions (in order)
+  default-actions:
+    - "FLAG"
+    - "ALERT"
+    - "COMMAND:warn %player% Suspicious activity detected"
+    - "FREEZE:10"
+    - "KICK:Cheating is not allowed"
+    - "TEMPBAN:1d"
+    - "BAN"
+  
+  # Custom actions configuration
+  actions:
+    FLAG:
+      enabled: true
+      log: true
+    
+    ALERT:
+      enabled: true
+      broadcast: true
+      permission: "aetherguard.alerts"
+    
+    KICK:
+      enabled: true
+      message: "§c§lAetherGuard §7» §eYou have been kicked for suspicious activity"
+    
+    BAN:
+      enabled: true
+      message: "§c§lAetherGuard §7» §eYou have been banned for cheating"
+      duration: -1
+    
+    FREEZE:
+      enabled: true
+      message: "§c§lAetherGuard §7» §eYou have been frozen. Please await staff review"
+    
+    COMMAND:
+      enabled: true
+      delay: 0
+
+# Movement Checks Configuration
+movement:
+  enabled: true
+  
+  # Fly checks
+  fly:
+    enabled: true
+    strictness: 2
+    max-violations: 15
+    buffer-size: 5
+  
+  # Speed checks  
+  speed:
+    enabled: true
+    strictness: 2
+    max-violations: 20
+    buffer-size: 8
+  
+  # NoSlow checks
+  noslow:
+    enabled: true
+    strictness: 2
+    max-violations: 12
+    buffer-size: 4
+  
+  # Step checks
+  step:
+    enabled: true
+    strictness: 2
+    max-violations: 10
+    buffer-size: 3
+  
+  # Jesus checks (water walk)
+  jesus:
+    enabled: true
+    strictness: 2
+    max-violations: 8
+    buffer-size: 3
+  
+  # Phase checks
+  phase:
+    enabled: true
+    strictness: 3
+    max-violations: 5
+    buffer-size: 2
+  
+  # Timer checks
+  timer:
+    enabled: true
+    strictness: 2
+    max-violations: 15
+    buffer-size: 5
+  
+  # Ground spoofing
+  ground-spoof:
+    enabled: true
+    strictness: 2
+    max-violations: 12
+    buffer-size: 4
+  
+  # Velocity handling
+  velocity:
+    enabled: true
+    strictness: 2
+    max-violations: 10
+    buffer-size: 3
+
+# Combat Checks Configuration
+combat:
+  enabled: true
+  
+  # KillAura detection
+  killaura:
+    enabled: true
+    strictness: 3
+    max-violations: 25
+    buffer-size: 8
+    
+    # Sub-checks
+    multi-attack: true
+    rotation-check: true
+    target-switch: true
+    autoclicker-detection: true
+  
+  # Reach checks
+  reach:
+    enabled: true
+    strictness: 3
+    max-violations: 20
+    buffer-size: 6
+    
+    # Max attack distance (blocks)
+    max-distance: 3.5
+    max-distance-sprint: 4.0
+  
+  # Critical hits
+  criticals:
+    enabled: true
+    strictness: 2
+    max-violations: 15
+    buffer-size: 5
+  
+  # CPS (Clicks Per Second)
+  cps:
+    enabled: true
+    strictness: 2
+    max-violations: 30
+    buffer-size: 10
+    
+    # Maximum CPS
+    max-cps: 20
+    max-cps-burst: 25
+  
+  # Aim assistance
+  aim:
+    enabled: true
+    strictness: 2
+    max-violations: 18
+    buffer-size: 6
+    
+    # Aim checks
+    smooth-aim: true
+    snap-aim: true
+    aim-assist: true
+
+# World Checks Configuration
+world:
+  enabled: true
+  
+  # FastBreak
+  fastbreak:
+    enabled: true
+    strictness: 2
+    max-violations: 25
+    buffer-size: 8
+  
+  # FastPlace
+  fastplace:
+    enabled: true
+    strictness: 2
+    max-violations: 30
+    buffer-size: 10
+    
+    # Maximum blocks per second
+    max-bps: 5
+  
+  # Nuker
+  nuker:
+    enabled: true
+    strictness: 3
+    max-violations: 15
+    buffer-size: 5
+    
+    # Maximum block breaks per second
+    max-breaks: 3
+  
+  # XRay detection
+  xray:
+    enabled: true
+    strictness: 2
+    max-violations: 20
+    buffer-size: 7
+    
+    # Mining pattern analysis
+    pattern-analysis: true
+    ratio-check: true
+    unusual-veins: true
+  
+  # Scaffold
+  scaffold:
+    enabled: true
+    strictness: 3
+    max-violations: 20
+    buffer-size: 6
+
+# Packet Checks Configuration
+packets:
+  enabled: true
+  
+  # Bad packets
+  bad-packets:
+    enabled: true
+    strictness: 3
+    max-violations: 10
+    buffer-size: 3
+  
+  # Packet frequency
+  frequency:
+    enabled: true
+    strictness: 2
+    max-violations: 50
+    buffer-size: 15
+    
+    # Maximum packets per second
+    max-pps: 100
+  
+  # KeepAlive spoofing
+  keepalive-spoof:
+    enabled: true
+    strictness: 2
+    max-violations: 15
+    buffer-size: 5
+
+# Exploit Checks Configuration
+exploits:
+  enabled: true
+  
+  # Crashers
+  crashers:
+    enabled: true
+    strictness: 3
+    max-violations: 5
+    buffer-size: 2
+  
+  # Book exploits
+  book:
+    enabled: true
+    strictness: 3
+    max-violations: 10
+    buffer-size: 3
+    
+    # Maximum book pages
+    max-pages: 50
+    max-page-length: 256
+  
+  # Command overflow
+  command-overflow:
+    enabled: true
+    strictness: 3
+    max-violations: 8
+    buffer-size: 2
+
+# Machine Learning (Optional)
+machine-learning:
+  enabled: false
+  
+  # Model training
+  training:
+    enabled: false
+    auto-train: false
+    training-interval: 3600  # seconds
+    
+    # Minimum data points for training
+    min-data-points: 1000
+  
+  # Detection models
+  models:
+    autoclicker:
+      enabled: false
+      threshold: 0.8
+      model-path: "models/autoclicker.model"
+    
+    aim-patterns:
+      enabled: false
+      threshold: 0.7
+      model-path: "models/aim.model"
+
+# GUI Configuration
+gui:
+  enabled: true
+  
+  # Update interval (ticks)
+  update-interval: 20
+  
+  # Default GUI size
+  default-size: 54
+  
+  # Enable animations
+  animations: true
+
+# Web Panel Configuration
+web-panel:
+  enabled: false
+  
+  # Port for web server
+  port: 8080
+  
+  # Security token
+  auth-token: "change-this-token"
+  
+  # Enable API endpoints
+  api-enabled: false
+  
+  # SSL configuration
+  ssl:
+    enabled: false
+    keystore: "keystore.jks"
+    password: "change-this-password"
+
+# Logging Configuration
+logging:
+  enabled: true
+  
+  # Log format: JSON, YAML, PLAIN
+  format: "JSON"
+  
+  # Log files
+  files:
+    violations: "logs/violations.log"
+    punishments: "logs/punishments.log"
+    performance: "logs/performance.log"
+    debug: "logs/debug.log"
+  
+  # Rotation settings
+  rotation:
+    enabled: true
+    max-size: "10MB"
+    max-files: 10
+    interval: "daily"
+
+# Integration Configuration
+integrations:
+  # Discord webhook
+  discord:
+    enabled: false
+    webhook-url: "https://discord.com/api/webhooks/YOUR_WEBHOOK"
+    
+    # Webhook settings
+    username: "AetherGuard"
+    avatar-url: "https://i.imgur.com/example.png"
+    
+    # Notification types
+    notifications:
+      violations: true
+      punishments: true
+      alerts: true
+  
+  # PlaceholderAPI
+  placeholderapi:
+    enabled: true
+    
+    # Custom placeholders
+    placeholders:
+      - "%aetherguard_violations%"
+      - "%aetherguard_profile%"
+      - "%aetherguard_ping%"
+  
+  # LuckPerms
+  luckperms:
+    enabled: true
+    
+    # Sync permissions
+    sync-permissions: true
+    
+    # Permission contexts
+    contexts:
+      exempt: "aetherguard.exempt"
+      staff: "aetherguard.staff"
+  
+  # WorldGuard
+  worldguard:
+    enabled: true
+    
+    # Disable checks in specific regions
+    exempt-regions: []
+    
+    # Region-specific profiles
+    region-profiles: {}
+
+# Performance Monitoring
+performance:
+  enabled: true
+  
+  # Monitor TPS
+  tps-monitoring: true
+  
+  # Memory usage
+  memory-monitoring: true
+  
+  # Check performance
+  check-performance: true
+  
+  # Alert on high resource usage
+  alerts:
+    low-tps: true
+    high-memory: true
+    slow-checks: true
+
+# Compatibility Settings
+compatibility:
+  # ViaVersion support
+  viaversion:
+    enabled: true
+    
+    # Protocol handling
+    protocol-support: true
+  
+  # Cross-version support
+  cross-version:
+    enabled: true
+    
+    # Minimum supported version
+    min-version: "1.8"
+    
+    # Maximum supported version
+    max-version: "1.21"
+
+# Advanced Settings
+advanced:
+  # Developer mode
+  developer-mode: false
+  
+  # Test mode
+  test-mode: false
+  
+  # Experimental features
+  experimental-features: false
+  
+  # Debug options
+  debug:
+    packet-logging: false
+    movement-logging: false
+    combat-logging: false
+    
+    # Debug level: BASIC, DETAILED, VERBOSE
+    level: "BASIC"

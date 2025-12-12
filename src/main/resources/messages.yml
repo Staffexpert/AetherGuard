@@ -1,0 +1,287 @@
+# 🛡️ AetherGuard AntiCheat Messages Configuration
+# All messages and notifications for the anti-cheat system
+
+# General Messages
+general:
+  prefix: "&c&lAetherGuard &7» &f"
+  no-permission: "&cYou don't have permission to use this command."
+  player-only: "&cThis command can only be executed by players."
+  console-only: "&cThis command can only be executed from console."
+  player-not-found: "&cPlayer &e%player% &cnot found."
+  player-offline: "&cPlayer &e%player% &cis offline."
+  invalid-number: "&cInvalid number: &e%number%"
+  invalid-check: "&cInvalid check: &e%check%"
+  check-not-found: "&cCheck not found: &e%check%"
+  check-disabled: "&cCheck &e%check% &cis already disabled."
+  check-enabled: "&aCheck &e%check% &ahas been enabled."
+  check-already-enabled: "&aCheck &e%check% &ais already enabled."
+  reload-success: "&aAetherGuard configuration reloaded successfully!"
+  reload-failed: "&cFailed to reload AetherGuard configuration: &e%error%"
+
+# Alert Messages
+alerts:
+  prefix: "&8[&cAetherGuard&8]"
+  
+  # Violation alerts
+  violation: "&c%player% &7failed &e%check% &7(&cx%vl%&7) &7[%type%]"
+  violation-debug: "&c%player% &7failed &e%check% &7(&cx%vl%&7) &7[%type%] &8| &7Debug: &f%debug%"
+  violation-ping: "&c%player% &7failed &e%check% &7(&cx%vl%&7) &7[%type%] &8| &7Ping: &f%ping%ms"
+  
+  # High violation alerts
+  high-violation: "&4&lHIGH VIOLATION &c%player% &7failed &e%check% &7(&cx%vl%&7) &7[%type%]"
+  
+  # Punishment alerts
+  punishment-kick: "&c%player% &7was kicked for &e%reason%"
+  punishment-ban: "&c%player% &7was banned for &e%reason%"
+  punishment-tempban: "&c%player% &7was temporarily banned for &e%reason% &7(&c%duration%&7)"
+  punishment-freeze: "&c%player% &7has been frozen for &e%duration% &7seconds"
+  punishment-command: "&c%player% &7- Command executed: &e%command%"
+  
+  # Notification messages
+  alerts-enabled: "&aAlerts have been &2enabled&a."
+  alerts-disabled: "&cAlerts have been &4disabled&c."
+  alerts-toggle: "&7Alerts have been %status%."
+
+# Command Messages
+commands:
+  # Main command
+  usage: "&7Usage: &e/ag <subcommand> [args...]"
+  help-header: "&6&lAetherGuard Commands &7- Page &e%page%"
+  help-footer: "&7Use &e/ag help <page> &7for more commands."
+  
+  # Toggle command
+  toggle-enabled: "&aAetherGuard has been &2enabled&a."
+  toggle-disabled: "&cAetherGuard has been &4disabled&c."
+  toggle-status: "&7AetherGuard is currently %status%."
+  
+  # Verbose command
+  verbose-enabled: "&aVerbose mode has been &2enabled&a for &e%player%&a."
+  verbose-disabled: "&cVerbose mode has been &4disabled&c for &e%player%&c."
+  verbose-status: "&7Verbose mode is currently %status% for &e%player%&7."
+  
+  # Debug command
+  debug-enabled: "&aDebug mode has been &2enabled&a for &e%player%&a."
+  debug-disabled: "&cDebug mode has been &4disabled&c for &e%player%&c."
+  debug-status: "&7Debug mode is currently %status% for &e%player%&7."
+  
+  # Profile command
+  profile-header: "&6&lPlayer Profile: &e%player%"
+  profile-info: "&7UUID: &f%uuid%"
+  profile-ping: "&7Ping: &f%ping%ms"
+  profile-tps: "&7TPS: &f%tps%"
+  profile-vl: "&7Total VL: &f%vl%"
+  profile-checks: "&7Failed Checks: &f%checks%"
+  profile-exempt: "&7Exempt: &f%exempt%"
+  profile-profile: "&7Detection Profile: &f%profile%"
+  
+  # Exempt command
+  exempt-added: "&aPlayer &e%player% &ahas been exempted from all checks."
+  exempt-removed: "&aPlayer &e%player% &ais no longer exempt from checks."
+  exempt-status: "&7Player &e%player% &7is currently %status% from checks."
+  
+  # Punish command
+  punish-success: "&aPlayer &e%player% &ahas been punished with &e%action%&a."
+  punish-failed: "&cFailed to punish player &e%player%&c: &e%error%"
+  
+  # Stats command
+  stats-header: "&6&lAetherGuard Statistics"
+  stats-players: "&7Total Players: &f%players%"
+  stats-checks: "&7Total Checks: &f%checks%"
+  stats-violations: "&7Total Violations: &f%violations%"
+  stats-punishments: "&7Total Punishments: &f%punishments%"
+  stats-tps: "&7Current TPS: &f%tps%"
+  stats-uptime: "&7Uptime: &f%uptime%"
+  
+  # Freeze command
+  freeze-frozen: "&cYou have been frozen by &e%staff%&c. Please wait for further instructions."
+  freeze-unfrozen: "&aYou have been unfrozen by &e%staff%&a."
+  freeze-staff-frozen: "&aPlayer &e%player% &ahas been frozen."
+  freeze-staff-unfrozen: "&aPlayer &e%player% &ahas been unfrozen."
+  freeze-already-frozen: "&cPlayer &e%player% &cis already frozen."
+  freeze-not-frozen: "&cPlayer &e%player% &cis not frozen."
+  
+  # Logs command
+  logs-header: "&6&lRecent Logs for &e%player%"
+  logs-entry: "&7[%time%] &e%check% &7- VL: &f%vl% &7- Info: &f%info%"
+  logs-empty: "&7No recent logs found for &e%player%&7."
+  
+  # History command
+  history-header: "&6&lPunishment History for &e%player%"
+  history-entry: "&7[%date%] &e%action% &7- Reason: &f%reason% &7- By: &f%staff%"
+  history-empty: "&7No punishment history found for &e%player%&7."
+  
+  # Test mode command
+  testmode-enabled: "&aTest mode has been &2enabled&a. No punishments will be issued."
+  testmode-disabled: "&cTest mode has been &4disabled&c. Normal punishments will resume."
+  testmode-status: "&7Test mode is currently %status%."
+  
+  # Check command
+  check-enabled: "&aCheck &e%check% &ahas been &2enabled&a."
+  check-disabled: "&cCheck &e%check% &ahas been &4disabled&c."
+  check-status: "&7Check &e%check% &7is currently %status%."
+  check-list-header: "&6&lAvailable Checks"
+  check-list-entry: "&7- &e%check% &7[%status%] &8- &f%description%"
+  
+  # VL command
+  vl-header: "&6&lViolation Levels for &e%player%"
+  vl-entry: "&7%check%: &f%vl%/%max%"
+  vl-reset: "&aViolation levels for &e%player% &ahave been reset."
+  
+  # Ping command
+  ping-info: "&7Ping for &e%player%&7: &f%ping%ms"
+  
+  # Profiler command
+  profiler-started: "&aProfiler has been started. Check console for results."
+  profiler-stopped: "&cProfiler has been stopped."
+  profiler-results: "&7Profiler results saved to &e%file%&7."
+  
+  # Physics debug command
+  physicsdebug-enabled: "&aPhysics debug has been &2enabled&a for &e%player%&a."
+  physicsdebug-disabled: "&cPhysics debug has been &4disabled&c for &e%player%&c."
+  
+  # Machine learning commands
+  ml-training-started: "&aMachine learning training has been started."
+  ml-training-completed: "&aMachine learning training completed successfully."
+  ml-training-failed: "&cMachine learning training failed: &e%error%"
+  ml-profile-updated: "&aML profile for &e%player% &ahas been updated."
+  
+  # Check suite commands
+  checksuite-created: "&aCheck suite &e%name% &ahas been created."
+  checksuite-loaded: "&aCheck suite &e%name% &ahas been loaded."
+  checksuite-saved: "&aCheck suite &e%name% &ahas been saved."
+  checksuite-deleted: "&aCheck suite &e%name% &ahas been deleted."
+  
+  # Action simulate command
+  action-simulated: "&aAction &e%action% &asimulated on &e%player%&a."
+  action-simulation-failed: "&cFailed to simulate action &e%action% &con &e%player%&c: &e%error%"
+
+# GUI Messages
+gui:
+  # Main GUI
+  main-title: "&6&lAetherGuard Control Panel"
+  main-stats: "&7Statistics"
+  main-checks: "&7Checks"
+  main-players: "&7Players"
+  main-config: "&7Configuration"
+  main-logs: "&7Logs"
+  
+  # Checks GUI
+  checks-title: "&6&lCheck Management"
+  checks-category: "&e%category% &7Checks"
+  check-enabled: "&a%check%"
+  check-disabled: "&c%check%"
+  check-info: "&7Click to toggle"
+  
+  # Player GUI
+  player-title: "&6&lPlayer Manager: %player%"
+  player-info: "&7Player Information"
+  player-violations: "&7Violations"
+  player-history: "&7History"
+  player-actions: "&7Actions"
+  
+  # Actions GUI
+  actions-title: "&6&lQuick Actions"
+  action-kick: "&cKick"
+  action-ban: "&4Ban"
+  action-freeze: "&bFreeze"
+  action-exempt: "&aExempt"
+  action-profile: "&eProfile"
+  
+  # Configuration GUI
+  config-title: "&6&lConfiguration"
+  config-general: "&7General Settings"
+  config-profiles: "&7Detection Profiles"
+  config-actions: "&7Actions"
+  config-integrations: "&7Integrations"
+  
+  # Logs GUI
+  logs-title: "&6&lRecent Logs"
+  logs-entry: "&7[%time%] &e%player% &7- %check%"
+  logs-empty: "&7No recent logs"
+
+# Check Messages
+checks:
+  movement:
+    fly: "Flying"
+    speed: "Speeding"
+    noslow: "NoSlow"
+    step: "Invalid Step"
+    jesus: "Water Walking"
+    phase: "Phase/NoClip"
+    timer: "Timer"
+    omnisprint: "OmniSprint"
+    fastladder: "Fast Ladder"
+    airstrafe: "Air Strafe"
+    motiondesync: "Motion Desync"
+    strafelimits: "Strafe Limits"
+    groundspoof: "Ground Spoof"
+    jumpboostspoof: "Jump Boost Spoof"
+    velocityspoof: "Velocity Spoof"
+    verticalboost: "Vertical Boost"
+    spider: "Spider/Climb"
+    elytra: "Illegal Elytra Movement"
+    vehiclespeed: "Vehicle Speed"
+    vehiclephase: "Vehicle Phase"
+    boatfly: "Boat Fly"
+    minecartglide: "Minecart Glide"
+  
+  combat:
+    killaura: "KillAura"
+    cps: "High CPS"
+    reach: "Reach"
+    hitbox: "HitBox"
+    criticals: "Criticals"
+    autoclicker: "AutoClicker"
+    perfecttimings: "Perfect Timings"
+    smoothaim: "Smooth Aim"
+    aimassist: "Aim Assist"
+    snapaim: "Snap Aim"
+    triggerbot: "TriggerBot"
+    wtap: "Illegal WTap"
+    stap: "Illegal STap"
+    multiaura: "MultiAura"
+    blockhit: "Illegal BlockHit"
+    shieldbypass: "Shield Bypass"
+  
+  world:
+    fastbreak: "FastBreak"
+    fastplace: "FastPlace"
+    nuker: "Nuker"
+    xray: "XRay"
+    scaffold: "Scaffold"
+    tower: "Tower"
+    autobuild: "AutoBuild"
+    autobridge: "AutoBridge"
+    illegalblockinteract: "Illegal Block Interaction"
+    ghosthand: "Ghost Hand"
+    noswing: "NoSwing"
+    fastbow: "FastBow"
+    bowaimbot: "Bow Aimbot"
+    instanteat: "InstantEat"
+    consumespeed: "Consume Speed"
+    bucketfastplace: "Bucket FastPlace"
+  
+  packets:
+    badpackets: "BadPackets"
+    packetorder: "Packet Order"
+    packetfrequency: "Packet Frequency"
+    packetburst: "Packet Burst"
+    payloadexploit: "Payload Exploit"
+    viaversionbypass: "ViaVersion Bypass"
+    keepalivespoof: "KeepAlive Spoof"
+    ping spoof: "Ping Spoof"
+    bookspam: "Book Spam"
+    mapspam: "Map Spam"
+    signexploit: "Sign Exploit"
+    resourcepackexploit: "Resource Pack Exploit"
+  
+  exploits:
+    crashers: "Crasher Exploit"
+    pluginmessageflood: "Plugin Message Flood"
+    tabcompleteexploit: "Tab Complete Exploit"
+    bookban: "Book Ban Exploit"
+    illegalchatpackets: "Illegal Chat Packets"
+    attributemodifierexploit: "Attribute Modifier Exploit"
+    enchantmentoverflow: "Enchantment Overflow"
+    anvilrenameexploit: "Anvil Rename Exploit"
+    commandoverflow: "Command Overflow"

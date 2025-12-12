@@ -1,0 +1,21 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.aetherguard:AetherGuard >---------------------
+[INFO] Building AetherGuard 1.0.0-RELEASE
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ AetherGuard ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ AetherGuard ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 45 source files to c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\target\classes
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/ActionManager.java: Some input files use or override a deprecated API.
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/managers/ActionManager.java: Recompile with -Xlint:deprecation for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.337 s
+[INFO] Finished at: 2025-12-11T21:00:10-03:00
+[INFO] ------------------------------------------------------------------------
