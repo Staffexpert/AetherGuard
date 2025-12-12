@@ -3,8 +3,6 @@
 **The Most Complete and Advanced Open-Source Anti-Cheat for Minecraft!**
 
 [![GitHub license](https://img.shields.io/github/license/Staffexpert/AetherGuard-AntiCheat?style=for-the-badge&color=blue)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/Staffexpert/AetherGuard-AntiCheat?style=for-the-badge&color=yellow)](https://github.com/Staffexpert/AetherGuard-AntiCheat/stargazers)
-[![GitHub downloads](https://img.shields.io/github/downloads/Staffexpert/AetherGuard-AntiCheat/total?style=for-the-badge&color=green)](https://github.com/Staffexpert/AetherGuard-AntiCheat/releases/latest)
 [![Discord](https://img.shields.io/discord/1077702874130090098?label=Discord&logo=discord&style=for-the-badge&color=7289DA)](https://discord.gg/z5qBaSxTZV)
 [![Java Version](https://img.shields.io/badge/Java-17+-orange?style=for-the-badge&logo=openjdk)](https://www.java.com/)
 
