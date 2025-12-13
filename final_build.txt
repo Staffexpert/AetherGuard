@@ -1,0 +1,119 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.aetherguard:AetherGuard >---------------------
+[INFO] Building AetherGuard 1.1.0-RELEASE
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ AetherGuard ---
+[INFO] Deleting c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ AetherGuard ---
+[INFO] Copying 52 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ AetherGuard ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 119 source files with javac [debug target 17] to target\classes
+[WARNING] location of system modules is not set in conjunction with -source 17
+  not setting the location of system modules may lead to class files that cannot run on JDK 17
+    --release 17 is recommended instead of -source 17 -target 17 because it sets the location of system modules automatically
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/core/AetherGuard.java: Some input files use or override a deprecated API.
+[INFO] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/main/java/com/aetherguard/core/AetherGuard.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ AetherGuard ---
+[INFO] skip non existing resourceDirectory c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ AetherGuard ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug target 17] to target\test-classes
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] location of system modules is not set in conjunction with -source 17
+  not setting the location of system modules may lead to class files that cannot run on JDK 17
+    --release 17 is recommended instead of -source 17 -target 17 because it sets the location of system modules automatically
+[INFO] 1 warning
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[4,17] package org.junit does not exist
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[5,24] package org.junit does not exist
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[13,6] cannot find symbol
+  symbol:   class Test
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[23,6] cannot find symbol
+  symbol:   class Test
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[33,6] cannot find symbol
+  symbol:   class Test
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[42,6] cannot find symbol
+  symbol:   class Test
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[57,6] cannot find symbol
+  symbol:   class Test
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[20,9] cannot find symbol
+  symbol:   method assertEquals(double,double,double)
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[30,9] cannot find symbol
+  symbol:   method assertEquals(double,double,double)
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[39,9] cannot find symbol
+  symbol:   method assertEquals(double,double,double)
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[48,9] cannot find symbol
+  symbol:   method assertFalse(boolean)
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[54,9] cannot find symbol
+  symbol:   method assertTrue(boolean)
+  location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[INFO] 12 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  15.097 s
+[INFO] Finished at: 2025-12-12T14:59:22-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:testCompile (default-testCompile) on project AetherGuard: Compilation failure: Compilation failure: 
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[4,17] package org.junit does not exist
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[5,24] package org.junit does not exist
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[13,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[23,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[33,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[42,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[57,6] cannot find symbol
+[ERROR]   symbol:   class Test
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[20,9] cannot find symbol
+[ERROR]   symbol:   method assertEquals(double,double,double)
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[30,9] cannot find symbol
+[ERROR]   symbol:   method assertEquals(double,double,double)
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[39,9] cannot find symbol
+[ERROR]   symbol:   method assertEquals(double,double,double)
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[48,9] cannot find symbol
+[ERROR]   symbol:   method assertFalse(boolean)
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] /c:/Users/USUARIO/Desktop/Aplugins/AetherGuard-AntiCheat/src/test/java/com/aetherguard/reputation/PlayerReputationSystemTest.java:[54,9] cannot find symbol
+[ERROR]   symbol:   method assertTrue(boolean)
+[ERROR]   location: class com.aetherguard.reputation.PlayerReputationSystemTest
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

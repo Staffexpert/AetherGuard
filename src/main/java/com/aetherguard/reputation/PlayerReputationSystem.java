@@ -49,8 +49,7 @@ public class PlayerReputationSystem {
             profile.reputation.updateAndGet(d -> Math.max(0, d - VIOLATION_PENALTY));
             saveData();
         } catch (Exception e) {
-            // Log error or handle gracefully
-            e.printStackTrace();
+            System.err.println("Error recording clean hours: " + e.getMessage());
         }
     }
     
@@ -68,8 +67,7 @@ public class PlayerReputationSystem {
             profile.reputation.updateAndGet(d -> Math.min(MAX_REPUTATION, d + CLEAN_HOUR_REWARD));
             saveData();
         } catch (Exception e) {
-            // Log error or handle gracefully
-            e.printStackTrace();
+            System.err.println("Error updating player reputation: " + e.getMessage());
         }
     }
     
@@ -108,7 +106,7 @@ public class PlayerReputationSystem {
                 oos.writeObject(checksum);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error saving reputation data: " + e.getMessage());
         }
     }
     
@@ -128,7 +126,7 @@ public class PlayerReputationSystem {
                 System.err.println("Reputation data integrity check failed. Data may be tampered.");
             }
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("Error loading reputation data: " + e.getMessage());
         }
     }
     

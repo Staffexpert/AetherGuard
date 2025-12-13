@@ -1,230 +1,317 @@
 package com.aetherguard.managers;
 
 import com.aetherguard.core.AetherGuard;
+import com.aetherguard.managers.interfaces.IPlayerManager;
+import com.google.gson.Gson;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
- * 🛡️ AetherGuard Player Manager
- * 
- * Manages player data and exemption states
- * Handles player profiles and tracking
- * 
+ * AetherGuard v1.2.0 - Player Manager
+ *
+ * High-performance concurrent player data store with scheduled persistence,
+ * exemption tracking, reputation system, and efficient dirty-flag optimization.
+ *
  * @author AetherGuard Team
- * @version 1.0.0
+ * @version 1.2.0
  */
-public class PlayerManager {
-    
+public class PlayerManager implements IPlayerManager {
+
+    private static final long SAVE_INTERVAL_TICKS = 20L * 60L * 5L;
+    private static final long CLEANUP_INTERVAL_TICKS = 20L * 60L * 30L;
+
     private final AetherGuard plugin;
     private final Map<UUID, PlayerData> playerData;
     private final Set<UUID> globallyExempt;
     private final Map<UUID, Set<String>> checkExemptions;
     private final Map<UUID, Set<String>> categoryExemptions;
-    
+    private final Gson gson = new Gson();
+
     public PlayerManager(AetherGuard plugin) {
         this.plugin = plugin;
         this.playerData = new ConcurrentHashMap<>();
         this.globallyExempt = ConcurrentHashMap.newKeySet();
         this.checkExemptions = new ConcurrentHashMap<>();
         this.categoryExemptions = new ConcurrentHashMap<>();
+        schedulePersistence();
     }
-    
-    /**
-     * Register player on join
-     */
+
+    private void schedulePersistence() {
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(
+            plugin, this::saveDirtyPlayers, SAVE_INTERVAL_TICKS, SAVE_INTERVAL_TICKS
+        );
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(
+            plugin, this::cleanup, CLEANUP_INTERVAL_TICKS, CLEANUP_INTERVAL_TICKS
+        );
+    }
+
     public void registerPlayer(Player player) {
-        getPlayerData(player);
+        loadPlayerData(player.getUniqueId());
     }
-    
-    /**
-     * Unregister player on quit
-     */
+
     public void unregisterPlayer(Player player) {
         UUID uuid = player.getUniqueId();
-        playerData.remove(uuid);
+        PlayerData pd = playerData.remove(uuid);
+        if (pd != null) savePlayerData(pd);
         globallyExempt.remove(uuid);
         checkExemptions.remove(uuid);
         categoryExemptions.remove(uuid);
     }
-    
-    /**
-     * Get player data
-     */
+
     public PlayerData getPlayerData(Player player) {
-        return playerData.computeIfAbsent(player.getUniqueId(), 
-            uuid -> new PlayerData(player));
+        return getPlayerData(player.getUniqueId(), player.getName());
     }
-    
-    /**
-     * Check if player is globally exempt
-     */
+
+    public PlayerData getPlayerData(UUID uuid, String fallbackName) {
+        return playerData.computeIfAbsent(uuid, id -> loadOrCreate(id, fallbackName));
+    }
+
+    private PlayerData loadOrCreate(UUID uuid, String fallbackName) {
+        PlayerData data = loadPlayerData(uuid);
+        return data != null ? data : new PlayerData(uuid, fallbackName != null ? fallbackName : "unknown");
+    }
+
     public boolean isExempt(Player player) {
-        return globallyExempt.contains(player.getUniqueId()) ||
-               player.hasPermission("aetherguard.bypass");
+        return player != null && (globallyExempt.contains(player.getUniqueId()) || 
+               player.hasPermission("aetherguard.bypass"));
     }
-    
-    /**
-     * Check if player is exempt from specific check
-     */
+
     public boolean isExempt(Player player, String checkName) {
-        UUID uuid = player.getUniqueId();
-        Set<String> exemptions = checkExemptions.get(uuid);
+        if (player == null) return false;
+        Set<String> exemptions = checkExemptions.get(player.getUniqueId());
         return exemptions != null && exemptions.contains(checkName);
     }
-    
-    /**
-     * Check if player is exempt from category
-     */
+
     public boolean isExemptFromCategory(Player player, String category) {
-        UUID uuid = player.getUniqueId();
-        Set<String> exemptions = categoryExemptions.get(uuid);
+        if (player == null) return false;
+        Set<String> exemptions = categoryExemptions.get(player.getUniqueId());
         return exemptions != null && exemptions.contains(category);
     }
-    
-    /**
-     * Add global exemption
-     */
+
     public void addExemption(Player player) {
-        globallyExempt.add(player.getUniqueId());
+        if (player != null) globallyExempt.add(player.getUniqueId());
     }
-    
-    /**
-     * Remove global exemption
-     */
+
     public void removeExemption(Player player) {
-        globallyExempt.remove(player.getUniqueId());
+        if (player != null) globallyExempt.remove(player.getUniqueId());
     }
-    
-    /**
-     * Add check exemption
-     */
+
     public void addExemption(Player player, String checkName) {
-        checkExemptions.computeIfAbsent(player.getUniqueId(), uuid -> new HashSet<>()).add(checkName);
+        if (player != null) {
+            checkExemptions.computeIfAbsent(player.getUniqueId(), k -> ConcurrentHashMap.newKeySet())
+                .add(checkName);
+        }
     }
-    
-    /**
-     * Remove check exemption
-     */
+
     public void removeExemption(Player player, String checkName) {
-        UUID uuid = player.getUniqueId();
-        Set<String> exemptions = checkExemptions.get(uuid);
-        if (exemptions != null) {
-            exemptions.remove(checkName);
-            if (exemptions.isEmpty()) {
-                checkExemptions.remove(uuid);
-            }
+        if (player == null) return;
+        Set<String> set = checkExemptions.get(player.getUniqueId());
+        if (set != null) {
+            set.remove(checkName);
+            if (set.isEmpty()) checkExemptions.remove(player.getUniqueId());
         }
     }
-    
-    /**
-     * Add category exemption
-     */
+
     public void addCategoryExemption(Player player, String category) {
-        categoryExemptions.computeIfAbsent(player.getUniqueId(), uuid -> new HashSet<>()).add(category);
-    }
-    
-    /**
-     * Remove category exemption
-     */
-    public void removeCategoryExemption(Player player, String category) {
-        UUID uuid = player.getUniqueId();
-        Set<String> exemptions = categoryExemptions.get(uuid);
-        if (exemptions != null) {
-            exemptions.remove(category);
-            if (exemptions.isEmpty()) {
-                categoryExemptions.remove(uuid);
-            }
+        if (player != null) {
+            categoryExemptions.computeIfAbsent(player.getUniqueId(), k -> ConcurrentHashMap.newKeySet())
+                .add(category);
         }
     }
-    
-    /**
-     * Save all player data to persistent storage
-     */
+
+    public void removeCategoryExemption(Player player, String category) {
+        if (player == null) return;
+        Set<String> set = categoryExemptions.get(player.getUniqueId());
+        if (set != null) {
+            set.remove(category);
+            if (set.isEmpty()) categoryExemptions.remove(player.getUniqueId());
+        }
+    }
+
+    private void saveDirtyPlayers() {
+        try {
+            File dataDir = new File(plugin.getDataFolder(), "player-data");
+            if (!dataDir.exists()) dataDir.mkdirs();
+
+            playerData.values().stream()
+                .filter(PlayerData::markAndCheckDirty)
+                .forEach(this::savePlayerData);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Failed to save dirty players", e);
+        }
+    }
+
+    private void savePlayerData(PlayerData data) {
+        try {
+            File dataDir = new File(plugin.getDataFolder(), "player-data");
+            if (!dataDir.exists()) dataDir.mkdirs();
+
+            File file = new File(dataDir, data.uuid.toString() + ".json");
+            String json = gson.toJson(data.toMemento());
+            Files.writeString(file.toPath(), json, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.FINE, "Failed to save data for " + data.uuid, e);
+        }
+    }
+
+    private PlayerData loadPlayerData(UUID uuid) {
+        try {
+            File dataDir = new File(plugin.getDataFolder(), "player-data");
+            File file = new File(dataDir, uuid.toString() + ".json");
+            if (!file.exists()) return null;
+
+            String json = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            PlayerData.Memento memento = gson.fromJson(json, PlayerData.Memento.class);
+            PlayerData playerData = new PlayerData(memento);
+            this.playerData.put(uuid, playerData);
+            return playerData;
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.FINE, "Failed to load data for " + uuid, e);
+            return null;
+        }
+    }
+
+    public void cleanup() {
+        playerData.keySet().removeIf(uuid -> {
+            Player p = plugin.getServer().getPlayer(uuid);
+            if (p == null || !p.isOnline()) {
+                PlayerData pd = playerData.remove(uuid);
+                if (pd != null) savePlayerData(pd);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public int getPlayerCount() {
+        return playerData.size();
+    }
+
+    public long getTotalViolations() {
+        return playerData.values().stream()
+            .mapToLong(PlayerData::getTotalViolations)
+            .sum();
+    }
+
     public void saveAllData() {
         try {
-            java.io.File dataDir = new java.io.File(plugin.getDataFolder(), "player-data");
-            if (!dataDir.exists()) {
-                dataDir.mkdirs();
-            }
-            
-            for (Map.Entry<UUID, PlayerData> entry : playerData.entrySet()) {
-                savePlayerData(entry.getValue(), dataDir);
-            }
+            File dataDir = new File(plugin.getDataFolder(), "player-data");
+            if (!dataDir.exists()) dataDir.mkdirs();
+            playerData.values().forEach(this::savePlayerData);
         } catch (Exception e) {
-            plugin.getLogger().warning("Failed to save player data: " + e.getMessage());
+            plugin.getLogger().log(Level.WARNING, "Failed to save all player data", e);
         }
     }
-    
-    /**
-     * Save individual player data
-     */
-    private void savePlayerData(PlayerData data, java.io.File dataDir) {
-        try {
-            java.io.File file = new java.io.File(dataDir, data.uuid + ".json");
-            StringBuilder json = new StringBuilder("{");
-            json.append("\"uuid\":\"").append(data.uuid).append("\",");
-            json.append("\"name\":\"").append(data.name).append("\",");
-            json.append("\"totalViolations\":").append(data.totalViolations).append(",");
-            json.append("\"lastViolationTime\":").append(data.lastViolationTime).append(",");
-            json.append("\"joinTime\":").append(data.joinTime);
-            json.append("}");
-            
-            java.nio.file.Files.write(file.toPath(), json.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            plugin.getLogger().fine("Failed to save data for " + data.uuid + ": " + e.getMessage());
+
+    @Override
+    public void savePlayerData(Player player) {
+        PlayerData pd = playerData.get(player.getUniqueId());
+        if (pd != null) savePlayerData(pd);
+    }
+
+    @Override
+    public boolean isExemptFromCheck(Player player, String checkName) {
+        return isExempt(player, checkName);
+    }
+
+    @Override
+    public void setExempt(Player player, boolean exempt) {
+        if (exempt) {
+            addExemption(player);
+        } else {
+            removeExemption(player);
         }
     }
-    
-    /**
-     * Clean up offline player data
-     */
-    public void cleanup() {
-        Iterator<Map.Entry<UUID, PlayerData>> iterator = playerData.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<UUID, PlayerData> entry = iterator.next();
-            Player player = plugin.getServer().getPlayer(entry.getKey());
-            if (player == null || !player.isOnline()) {
-                iterator.remove();
-            }
+
+    @Override
+    public void setCheckExemption(Player player, String checkName, boolean exempt) {
+        if (exempt) {
+            addExemption(player, checkName);
+        } else {
+            removeExemption(player, checkName);
         }
     }
-    
+
     /**
-     * Player data container
+     * Lightweight player data record with atomic dirty flag
      */
     public static class PlayerData {
         private final UUID uuid;
         private final String name;
         private final long joinTime;
-        private long lastViolationTime;
-        private long totalViolations;
-        private boolean frozen;
+        private volatile long lastViolationTime;
+        private volatile long totalViolations;
         private final Map<String, Long> checkViolations;
         private final Map<String, Object> customData;
-        
-        public PlayerData(Player player) {
-            this.uuid = player.getUniqueId();
-            this.name = player.getName();
+        private volatile double reputation;
+        private final java.util.concurrent.atomic.AtomicBoolean dirty = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+        public PlayerData(UUID uuid, String name) {
+            this.uuid = uuid;
+            this.name = name;
             this.joinTime = System.currentTimeMillis();
             this.lastViolationTime = 0;
             this.totalViolations = 0;
-            this.frozen = false;
-            this.checkViolations = new HashMap<>();
-            this.customData = new HashMap<>();
+            this.checkViolations = new ConcurrentHashMap<>();
+            this.customData = new ConcurrentHashMap<>();
+            this.reputation = 0.0;
         }
-        
+
+        public PlayerData(Memento m) {
+            this.uuid = UUID.fromString(m.uuid);
+            this.name = m.name;
+            this.joinTime = m.joinTime;
+            this.lastViolationTime = m.lastViolationTime;
+            this.totalViolations = m.totalViolations;
+            this.checkViolations = new ConcurrentHashMap<>(m.checkViolations != null ? m.checkViolations : Map.of());
+            this.customData = new ConcurrentHashMap<>(m.customData != null ? m.customData : Map.of());
+            this.reputation = m.reputation;
+        }
+
+        public boolean markAndCheckDirty() { return dirty.getAndSet(false); }
+        public void markDirty() { dirty.set(true); }
+
         public UUID getUuid() { return uuid; }
         public String getName() { return name; }
         public long getJoinTime() { return joinTime; }
         public long getLastViolationTime() { return lastViolationTime; }
-        public void setLastViolationTime(long lastViolationTime) { this.lastViolationTime = lastViolationTime; }
+        public void setLastViolationTime(long t) { this.lastViolationTime = t; markDirty(); }
         public long getTotalViolations() { return totalViolations; }
-        public void setTotalViolations(long totalViolations) { this.totalViolations = totalViolations; }
-        public boolean isFrozen() { return frozen; }
-        public void setFrozen(boolean frozen) { this.frozen = frozen; }
+        public void addViolation(long severity) { this.totalViolations += severity; this.lastViolationTime = System.currentTimeMillis(); markDirty(); }
         public Map<String, Long> getCheckViolations() { return checkViolations; }
         public Map<String, Object> getCustomData() { return customData; }
+        public double getReputation() { return reputation; }
+        public void adjustReputation(double delta) { this.reputation = Math.max(-100.0, Math.min(100.0, this.reputation + delta)); markDirty(); }
+
+        public Memento toMemento() {
+            Memento m = new Memento();
+            m.uuid = uuid.toString();
+            m.name = name;
+            m.joinTime = joinTime;
+            m.lastViolationTime = lastViolationTime;
+            m.totalViolations = totalViolations;
+            m.checkViolations = new HashMap<>(checkViolations);
+            m.customData = new HashMap<>(customData);
+            m.reputation = reputation;
+            return m;
+        }
+
+        public static final class Memento {
+            public String uuid;
+            public String name;
+            public long joinTime;
+            public long lastViolationTime;
+            public long totalViolations;
+            public Map<String, Long> checkViolations;
+            public Map<String, Object> customData;
+            public double reputation;
+        }
     }
 }

@@ -1,0 +1,15 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.aetherguard:AetherGuard >---------------------
+[INFO] Building AetherGuard 1.1.0-RELEASE
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-cli) @ AetherGuard ---
+[INFO] Building jar: c:\Users\USUARIO\Desktop\Aplugins\AetherGuard-AntiCheat\target\AetherGuard-1.1.0-RELEASE.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.784 s
+[INFO] Finished at: 2025-12-12T15:04:05-03:00
+[INFO] ------------------------------------------------------------------------

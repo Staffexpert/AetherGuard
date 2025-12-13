@@ -1,10 +1,26 @@
 # 🛡️ AetherGuard AntiCheat Configuration
-# The most complete open-source anti-cheat for Minecraft
+# The most complete open-source anti-cheat for Minecraft - Hyper Edition
+
+# Branding - Make AetherGuard yours!
+branding:
+  prefix: "§8[§c§lAetherGuard§8]§r "
+  alert-message: "%prefix%§c%player% §7failed §e%check% §c(VL: %vl%) §7[Ping: %ping%ms, TPS: %tps%]"
+  kick-message: "§c§lAetherGuard\n\n§7You have been removed from the server.\n§7Reason: §eSuspicious Activity"
+  ban-message: "§c§lAetherGuard\n\n§7You have been permanently removed from the server.\n§7Reason: §eCheating"
+  freeze-message: "§c§lYOU HAVE BEEN FROZEN!\n\n§7Please do not log out.\n§7A staff member will review your case shortly."
 
 # Core Settings
 core:
   # Detection profile: LOW, MEDIUM, STRICT, ULTRA
   detection-profile: "MEDIUM"
+
+  # Adaptive System - Dynamically adjusts checks based on server/player status
+  adaptive-system:
+    enabled: true
+    # Reduce check intensity if TPS drops below this value
+    min-tps-for-strictness: 18.5
+    # Trust system: players with long, clean playtime get slightly more lenient checks
+    trust-system-enabled: true
   
   # Enable/disable AetherGuard globally
   enabled: true
@@ -47,6 +63,21 @@ violation-system:
     
     # Reset buffer on punishment
     reset-on-punish: true
+
+# Judgement Day (Ban Wave) System - Premium Feature
+ban-wave:
+  # Enable the ban wave system.
+  enabled: true
+  # Maximum number of players to ban in a single wave.
+  max-bans-per-wave: 10
+  # Interval in minutes between automatic wave checks.
+  interval-minutes: 5
+  # Delay in milliseconds between each ban inside a wave.
+  ban-delay-ms: 500
+  # Maximum number of players to keep in the ban queue.
+  max-queue-size: 1000
+  # Minimum number of players in the queue to trigger an automatic wave.
+  min-queue-for-wave: 5
 
 # Action Manager
 action-manager:
@@ -94,234 +125,22 @@ action-manager:
 # Movement Checks Configuration
 movement:
   enabled: true
-  
-  # Fly checks
-  fly:
-    enabled: true
-    strictness: 2
-    max-violations: 15
-    buffer-size: 5
-  
-  # Speed checks  
-  speed:
-    enabled: true
-    strictness: 2
-    max-violations: 20
-    buffer-size: 8
-  
-  # NoSlow checks
-  noslow:
-    enabled: true
-    strictness: 2
-    max-violations: 12
-    buffer-size: 4
-  
-  # Step checks
-  step:
-    enabled: true
-    strictness: 2
-    max-violations: 10
-    buffer-size: 3
-  
-  # Jesus checks (water walk)
-  jesus:
-    enabled: true
-    strictness: 2
-    max-violations: 8
-    buffer-size: 3
-  
-  # Phase checks
-  phase:
-    enabled: true
-    strictness: 3
-    max-violations: 5
-    buffer-size: 2
-  
-  # Timer checks
-  timer:
-    enabled: true
-    strictness: 2
-    max-violations: 15
-    buffer-size: 5
-  
-  # Ground spoofing
-  ground-spoof:
-    enabled: true
-    strictness: 2
-    max-violations: 12
-    buffer-size: 4
-  
-  # Velocity handling
-  velocity:
-    enabled: true
-    strictness: 2
-    max-violations: 10
-    buffer-size: 3
 
 # Combat Checks Configuration
 combat:
   enabled: true
-  
-  # KillAura detection
-  killaura:
-    enabled: true
-    strictness: 3
-    max-violations: 25
-    buffer-size: 8
-    
-    # Sub-checks
-    multi-attack: true
-    rotation-check: true
-    target-switch: true
-    autoclicker-detection: true
-  
-  # Reach checks
-  reach:
-    enabled: true
-    strictness: 3
-    max-violations: 20
-    buffer-size: 6
-    
-    # Max attack distance (blocks)
-    max-distance: 3.5
-    max-distance-sprint: 4.0
-  
-  # Critical hits
-  criticals:
-    enabled: true
-    strictness: 2
-    max-violations: 15
-    buffer-size: 5
-  
-  # CPS (Clicks Per Second)
-  cps:
-    enabled: true
-    strictness: 2
-    max-violations: 30
-    buffer-size: 10
-    
-    # Maximum CPS
-    max-cps: 20
-    max-cps-burst: 25
-  
-  # Aim assistance
-  aim:
-    enabled: true
-    strictness: 2
-    max-violations: 18
-    buffer-size: 6
-    
-    # Aim checks
-    smooth-aim: true
-    snap-aim: true
-    aim-assist: true
 
 # World Checks Configuration
 world:
   enabled: true
-  
-  # FastBreak
-  fastbreak:
-    enabled: true
-    strictness: 2
-    max-violations: 25
-    buffer-size: 8
-  
-  # FastPlace
-  fastplace:
-    enabled: true
-    strictness: 2
-    max-violations: 30
-    buffer-size: 10
-    
-    # Maximum blocks per second
-    max-bps: 5
-  
-  # Nuker
-  nuker:
-    enabled: true
-    strictness: 3
-    max-violations: 15
-    buffer-size: 5
-    
-    # Maximum block breaks per second
-    max-breaks: 3
-  
-  # XRay detection
-  xray:
-    enabled: true
-    strictness: 2
-    max-violations: 20
-    buffer-size: 7
-    
-    # Mining pattern analysis
-    pattern-analysis: true
-    ratio-check: true
-    unusual-veins: true
-  
-  # Scaffold
-  scaffold:
-    enabled: true
-    strictness: 3
-    max-violations: 20
-    buffer-size: 6
 
 # Packet Checks Configuration
 packets:
   enabled: true
-  
-  # Bad packets
-  bad-packets:
-    enabled: true
-    strictness: 3
-    max-violations: 10
-    buffer-size: 3
-  
-  # Packet frequency
-  frequency:
-    enabled: true
-    strictness: 2
-    max-violations: 50
-    buffer-size: 15
-    
-    # Maximum packets per second
-    max-pps: 100
-  
-  # KeepAlive spoofing
-  keepalive-spoof:
-    enabled: true
-    strictness: 2
-    max-violations: 15
-    buffer-size: 5
 
 # Exploit Checks Configuration
 exploits:
   enabled: true
-  
-  # Crashers
-  crashers:
-    enabled: true
-    strictness: 3
-    max-violations: 5
-    buffer-size: 2
-  
-  # Book exploits
-  book:
-    enabled: true
-    strictness: 3
-    max-violations: 10
-    buffer-size: 3
-    
-    # Maximum book pages
-    max-pages: 50
-    max-page-length: 256
-  
-  # Command overflow
-  command-overflow:
-    enabled: true
-    strictness: 3
-    max-violations: 8
-    buffer-size: 2
 
 # Machine Learning (Optional)
 machine-learning:
@@ -360,25 +179,6 @@ gui:
   
   # Enable animations
   animations: true
-
-# Web Panel Configuration
-web-panel:
-  enabled: false
-  
-  # Port for web server
-  port: 8080
-  
-  # Security token
-  auth-token: "change-this-token"
-  
-  # Enable API endpoints
-  api-enabled: false
-  
-  # SSL configuration
-  ssl:
-    enabled: false
-    keystore: "keystore.jks"
-    password: "change-this-password"
 
 # Logging Configuration
 logging:
@@ -472,6 +272,7 @@ performance:
 # Compatibility Settings
 compatibility:
   # ViaVersion support
+  # This is crucial for accurate multi-version checks.
   viaversion:
     enabled: true
     
@@ -487,6 +288,14 @@ compatibility:
     
     # Maximum supported version
     max-version: "1.21"
+
+  # Geyser/Bedrock Support
+  geyser-support:
+    enabled: true
+    # Global leniency multiplier for Bedrock players.
+    # Movement checks are more lenient for them due to different physics.
+    # 1.0 = no change, 1.5 = 50% more lenient.
+    global-leniency-multiplier: 1.2
 
 # Advanced Settings
 advanced:

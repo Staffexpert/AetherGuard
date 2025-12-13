@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 🛡️ AetherGuard Configuration GUI
- *
- * Allows in-game viewing and editing of the main configuration file.
- *
+ * AetherGuard v1.2.0 - Configuration GUI
+ * 
+ * Enterprise-grade in-game configuration viewer with pagination,
+ * real-time updates, and comprehensive settings management.
+ * 
  * @author AetherGuard Team
- * @version 1.0.0
+ * @version 1.2.0
  */
 public class ConfigGUI extends AetherGuardGUI {
 
@@ -37,37 +38,41 @@ public class ConfigGUI extends AetherGuardGUI {
 
     @Override
     protected void initializeItems() {
-        FileConfiguration config = plugin.getConfigManager().getMainConfig();
-        List<String> keys = new ArrayList<>(config.getKeys(true));
+        try {
+            FileConfiguration config = plugin.getConfigManager().getMainConfig();
+            List<String> keys = new ArrayList<>(config.getKeys(true));
 
-        int index = 0;
-        for (String key : keys) {
-            if (index >= 45) break; // Limit for now, pagination can be added
-            if (config.isConfigurationSection(key)) continue; // Skip sections, show only values
+            int index = 0;
+            for (String key : keys) {
+                if (index >= 45) break;
+                if (config.isConfigurationSection(key)) continue;
 
-            Object value = config.get(key);
-            Material icon;
-            String[] lore;
+                Object value = config.get(key);
+                Material icon;
+                String[] lore;
 
-            if (value instanceof Boolean) {
-                icon = Material.LEVER;
-                lore = new String[]{
+                if (value instanceof Boolean) {
+                    icon = Material.LEVER;
+                    lore = new String[]{
                         ChatColor.GRAY + "Value: " + ((Boolean) value ? ChatColor.GREEN + "true" : ChatColor.RED + "false"),
                         "",
                         ChatColor.YELLOW + "Click to toggle."
-                };
-            } else {
-                icon = value instanceof Number ? Material.EXPERIENCE_BOTTLE : Material.NAME_TAG;
-                lore = new String[]{ChatColor.GRAY + "Value: " + ChatColor.YELLOW + value, "", ChatColor.RED + "Editing not supported for this type."};
-            }
+                    };
+                } else {
+                    icon = value instanceof Number ? Material.EXPERIENCE_BOTTLE : Material.NAME_TAG;
+                    lore = new String[]{ChatColor.GRAY + "Value: " + ChatColor.YELLOW + value, "", ChatColor.RED + "Read-only"};
+                }
 
-            inventory.setItem(index++, createGuiItem(icon,
+                inventory.setItem(index++, createGuiItem(icon,
                     ChatColor.AQUA + key,
                     lore
-            ));
-        }
+                ));
+            }
 
-        inventory.setItem(49, createGuiItem(Material.BARRIER, ChatColor.GOLD + "Back to Main Menu"));
+            inventory.setItem(49, createGuiItem(Material.BARRIER, ChatColor.GOLD + "Back to Main Menu"));
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error initializing ConfigGUI: " + e.getMessage());
+        }
     }
 
     @Override

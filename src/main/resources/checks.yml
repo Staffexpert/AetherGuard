@@ -1,5 +1,5 @@
 # 🛡️ AetherGuard Check Configuration
-# Detailed configuration for all anti-cheat checks
+# Detailed configuration for all anti-cheat checks - Hyper Edition
 
 # Movement Checks
 movement:
@@ -10,8 +10,9 @@ movement:
       strictness: 1
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Basic vertical flight detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects basic vertical movement without support."
+      geyser-leniency: 1.5 # Bedrock players often have slightly different vertical motion.
     
     # Fly Type B - Advanced vertical with compensation
     B:
@@ -19,8 +20,9 @@ movement:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Advanced vertical flight with latency compensation"
+      actions: ["FLOW:minor-movement"]
+      description: "Advanced vertical flight detection with latency and physics compensation."
+      geyser-leniency: 1.3
     
     # Fly Type C - Ground spoof detection
     C:
@@ -28,8 +30,9 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Ground spoof detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects when a player's client falsely reports being on the ground."
+      geyser-leniency: 1.1
     
     # Fly Type D - Air jump detection
     D:
@@ -37,8 +40,9 @@ movement:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Air jump detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects jumps or vertical boosts while already in the air."
+      geyser-leniency: 1.4
     
     # Fly Type E - Glide detection
     E:
@@ -46,8 +50,9 @@ movement:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Glide detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects unnatural gliding or slowed falling without an elytra or potion effect."
+      geyser-leniency: 1.2
     
     # Fly Type F - Momentum-based detection
     F:
@@ -55,8 +60,9 @@ movement:
       strictness: 3
       max-violations: 8
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Momentum-based flight detection"
+      actions: ["FLOW:major-movement"]
+      description: "Analyzes if vertical momentum is gained or conserved unnaturally."
+      geyser-leniency: 1.2
     
     # Fly Type G - Predictive detection
     G:
@@ -64,8 +70,19 @@ movement:
       strictness: 3
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Predictive flight detection"
+      actions: ["FLOW:major-movement"]
+      description: "Predicts next position based on physics and flags major deviations."
+      geyser-leniency: 1.5
+
+    # [NEW] Fly Type H - Ascension
+    H:
+      enabled: true
+      strictness: 2
+      max-violations: 7
+      buffer-size: 2
+      actions: ["FLOW:major-movement"]
+      description: "Detects a constant, smooth vertical ascent inconsistent with normal gameplay."
+      geyser-leniency: 1.3
 
   speed:
     # Speed Type A - Basic horizontal speed
@@ -74,8 +91,9 @@ movement:
       strictness: 1
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Basic horizontal speed check"
+      actions: ["FLOW:minor-movement"]
+      description: "Basic horizontal speed check on flat ground."
+      geyser-leniency: 1.4
     
     # Speed Type B - Sprint speed
     B:
@@ -83,8 +101,9 @@ movement:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Sprint speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects speed exceeding normal sprint values, considering effects."
+      geyser-leniency: 1.2
     
     # Speed Type C - Strafe speed
     C:
@@ -92,8 +111,9 @@ movement:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Strafe speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects unnaturally fast diagonal or sideways movement."
+      geyser-leniency: 1.5 # Bedrock strafing is very different.
     
     # Speed Type D - Air speed
     D:
@@ -101,8 +121,9 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Air speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Monitors horizontal speed while airborne."
+      geyser-leniency: 1.3
     
     # Speed Type E - Water/Lava speed
     E:
@@ -110,8 +131,9 @@ movement:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Water/Lava speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects speed in liquids exceeding expected values (depth strider, etc)."
+      geyser-leniency: 1.1
     
     # Speed Type F - Ice speed
     F:
@@ -119,8 +141,9 @@ movement:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Ice speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Monitors speed on low-friction blocks like ice."
+      geyser-leniency: 1.0
     
     # Speed Type G - Sneak speed
     G:
@@ -128,8 +151,9 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Sneak speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects moving too fast while sneaking."
+      geyser-leniency: 1.2
     
     # Speed Type H - Predictive speed
     H:
@@ -137,8 +161,19 @@ movement:
       strictness: 3
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Predictive speed detection"
+      actions: ["FLOW:major-movement"]
+      description: "Predicts movement vectors and flags impossible acceleration."
+      geyser-leniency: 1.4
+
+    # [NEW] Speed Type I - Attribute
+    I:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 4
+      actions: ["FLOW:minor-movement"]
+      description: "Detects speed on stairs, slabs, and other partial blocks."
+      geyser-leniency: 1.6 # Very important for Bedrock.
 
   noslow:
     # NoSlow Type A - Item usage
@@ -147,8 +182,8 @@ movement:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Item usage speed detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects full speed while eating, drinking, or drawing a bow."
     
     # NoSlow Type B - Blocking
     B:
@@ -156,8 +191,8 @@ movement:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Blocking speed detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects full speed while blocking with a shield."
     
     # NoSlow Type C - Sneaking
     C:
@@ -165,8 +200,8 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Sneaking speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects players instantly stopping sneaking without slowdown."
     
     # NoSlow Type D - Web/honey block
     D:
@@ -174,8 +209,8 @@ movement:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Web/honey block speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects lack of slowdown in webs or honey blocks."
     
     # NoSlow Type E - Soul sand
     E:
@@ -183,8 +218,8 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Soul sand speed detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects lack of slowdown on soul sand."
 
   step:
     # Step Type A - Basic step height
@@ -193,8 +228,9 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Basic step height check"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects stepping up more than 1 block at a time."
+      geyser-leniency: 1.2
     
     # Step Type B - Air step
     B:
@@ -202,8 +238,9 @@ movement:
       strictness: 2
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Air step detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects stepping up blocks without being on the ground."
+      geyser-leniency: 1.1
     
     # Step Type C - Velocity step
     C:
@@ -211,8 +248,8 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Velocity step detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects stepping up blocks while having high velocity."
     
     # Step Type D - Liquid step
     D:
@@ -220,8 +257,8 @@ movement:
       strictness: 2
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Liquid step detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects stepping out of liquids unnaturally."
 
   jesus:
     # Jesus Type A - Water walk
@@ -230,8 +267,9 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Water walk detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects walking on top of water."
+      geyser-leniency: 1.2
     
     # Jesus Type B - Lava walk
     B:
@@ -239,8 +277,8 @@ movement:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Lava walk detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects walking on top of lava."
     
     # Jesus Type C - Surface tension
     C:
@@ -248,8 +286,8 @@ movement:
       strictness: 2
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Surface tension detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects bouncing or staying on a liquid's surface unnaturally."
 
 # Combat Checks
 combat:
@@ -260,8 +298,8 @@ combat:
       strictness: 3
       max-violations: 20
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Multi attack detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects attacking multiple entities in a single swing packet."
     
     # KillAura Type B - Rotation
     B:
@@ -269,8 +307,8 @@ combat:
       strictness: 3
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Invalid rotation detection"
+      actions: ["FLOW:blatant-combat"]
+      description: "Detects impossibly fast or snapping rotations between targets."
     
     # KillAura Type C - Target switch
     C:
@@ -278,8 +316,8 @@ combat:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Target switch detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Analyzes the timing and logic of switching between targets."
     
     # KillAura Type D - Attack timing
     D:
@@ -287,8 +325,8 @@ combat:
       strictness: 2
       max-violations: 18
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Attack timing detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects attacks that do not align with the player's swing animation."
     
     # KillAura Type E - Wall attack
     E:
@@ -296,8 +334,8 @@ combat:
       strictness: 3
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Wall attack detection"
+      actions: ["FLOW:blatant-combat"]
+      description: "Detects attacking entities through solid walls without a line of sight."
     
     # KillAura Type F - Self damage
     F:
@@ -305,8 +343,8 @@ combat:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Self damage detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects attacking oneself, often a byproduct of poorly coded cheats."
     
     # KillAura Type G - Critical abuse
     G:
@@ -314,8 +352,8 @@ combat:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Critical abuse detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects players forcing critical hits without meeting the conditions (e.g., falling)."
     
     # KillAura Type H - Auto block
     H:
@@ -323,8 +361,8 @@ combat:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Auto block detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects players blocking with a shield instantly after an attack."
     
     # KillAura Type I - No swing
     I:
@@ -332,8 +370,8 @@ combat:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "No swing detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects dealing damage without sending a swing animation packet."
     
     # KillAura Type J - Reach abuse
     J:
@@ -341,8 +379,8 @@ combat:
       strictness: 3
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Reach abuse detection"
+      actions: ["FLOW:blatant-combat"]
+      description: "Cross-references with the Reach check for KillAura-specific patterns."
     
     # KillAura Type K - Aim patterns
     K:
@@ -350,8 +388,8 @@ combat:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Aim pattern detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects robotic or unnaturally smooth aiming patterns."
     
     # KillAura Type L - Predictive detection
     L:
@@ -359,8 +397,26 @@ combat:
       strictness: 3
       max-violations: 8
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Predictive KillAura detection"
+      actions: ["FLOW:blatant-combat"]
+      description: "Predicts player's next target and flags impossible acquisitions."
+
+    # [NEW] KillAura Type M - Angle
+    M:
+      enabled: true
+      strictness: 2
+      max-violations: 12
+      buffer-size: 4
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects if the angle between player's look direction and target is impossible."
+
+    # [NEW] KillAura Type N - Heuristics
+    N:
+      enabled: true
+      strictness: 1
+      max-violations: 25
+      buffer-size: 10
+      actions: ["FLOW:suspicious-combat"]
+      description: "Analyzes long-term combat data (hit rate, CPS, etc.) for suspicious patterns."
 
   reach:
     # Reach Type A - Distance check
@@ -369,8 +425,8 @@ combat:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Basic distance check"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Basic distance check between attacker and victim."
     
     # Reach Type B - Latency compensated
     B:
@@ -378,8 +434,8 @@ combat:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Latency compensated check"
+      actions: ["FLOW:suspicious-combat"]
+      description: "More accurate check that accounts for player and server latency."
     
     # Reach Type C - Predictive
     C:
@@ -387,8 +443,8 @@ combat:
       strictness: 3
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Predictive reach check"
+      actions: ["FLOW:blatant-combat"]
+      description: "Predicts victim's movement to calculate a more precise reach distance."
     
     # Reach Type D - Block interactions
     D:
@@ -396,8 +452,8 @@ combat:
       strictness: 2
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Block interaction reach"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Checks reach distance for block interactions (placing/breaking)."
     
     # Reach Type E - Entity reach
     E:
@@ -405,8 +461,8 @@ combat:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Entity reach detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Checks reach for non-player entities (e.g., item frames)."
     
     # Reach Type F - Combined reach
     F:
@@ -414,8 +470,8 @@ combat:
       strictness: 3
       max-violations: 8
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Combined reach analysis"
+      actions: ["FLOW:blatant-combat"]
+      description: "Combines multiple reach calculation methods for higher accuracy."
     
     # Reach Type G - 3D reach
     G:
@@ -423,8 +479,17 @@ combat:
       strictness: 3
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "3D reach calculation"
+      actions: ["FLOW:blatant-combat"]
+      description: "Calculates reach using a 3D bounding box, not just a 2D distance."
+
+    # [NEW] Reach Type H - Vertical
+    H:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 4
+      actions: ["FLOW:suspicious-combat"]
+      description: "Specifically checks for impossible vertical reach (hitting players far above/below)."
 
   autoclicker:
     # AutoClicker Type A - CPS analysis
@@ -433,8 +498,8 @@ combat:
       strictness: 2
       max-violations: 20
       buffer-size: 6
-      punishment: "FLAG"
-      description: "CPS analysis"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Flags abnormally high and sustained clicks-per-second."
     
     # AutoClicker Type B - Pattern detection
     B:
@@ -442,8 +507,8 @@ combat:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Click pattern detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects inhumanly perfect click intervals and patterns."
     
     # AutoClicker Type C - Consistency check
     C:
@@ -451,8 +516,8 @@ combat:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Consistency detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Analyzes the variance in click timings. Human clicks are never perfectly consistent."
     
     # AutoClicker Type D - Burst detection
     D:
@@ -460,8 +525,8 @@ combat:
       strictness: 2
       max-violations: 18
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Burst detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Flags sudden, short bursts of extremely high CPS."
     
     # AutoClicker Type E - Double click
     E:
@@ -469,8 +534,8 @@ combat:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Double click detection"
+      actions: ["FLOW:suspicious-combat"]
+      description: "Detects autoclickers that try to mimic double-clicking."
     
     # AutoClicker Type F - ML enhanced
     F:
@@ -478,8 +543,8 @@ combat:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Machine learning enhanced"
+      actions: ["FLOW:blatant-combat"]
+      description: "Uses the machine learning model to identify complex click patterns."
 
 # World Checks
 world:
@@ -490,8 +555,8 @@ world:
       strictness: 2
       max-violations: 20
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Break speed check"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects breaking blocks faster than possible, considering tool and enchantments."
     
     # FastBreak Type B - InstaBreak
     B:
@@ -499,8 +564,8 @@ world:
       strictness: 3
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Instant break detection"
+      actions: ["FLOW:major-movement"]
+      description: "Detects breaking blocks with a high hardness value instantly."
     
     # FastBreak Type C - Wrong tool
     C:
@@ -508,8 +573,8 @@ world:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Wrong tool speed"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects breaking blocks too fast with the wrong tool (e.g., stone with a fist)."
     
     # FastBreak Type D - Multi block
     D:
@@ -517,8 +582,8 @@ world:
       strictness: 3
       max-violations: 8
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Multi block break"
+      actions: ["FLOW:major-movement"]
+      description: "Detects breaking multiple blocks from a single swing."
     
     # FastBreak Type E - Predictive
     E:
@@ -526,8 +591,8 @@ world:
       strictness: 3
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Predictive break detection"
+      actions: ["FLOW:major-movement"]
+      description: "Predicts break time and flags if the block breaks too early."
     
     # FastBreak Type F - Rotation based
     F:
@@ -535,8 +600,8 @@ world:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Rotation based detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects breaking blocks that are not being looked at."
 
   fastplace:
     # FastPlace Type A - Speed check
@@ -545,8 +610,8 @@ world:
       strictness: 2
       max-violations: 25
       buffer-size: 8
-      punishment: "FLAG"
-      description: "Place speed check"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects placing blocks faster than the client should allow."
     
     # FastPlace Type B - No swing
     B:
@@ -554,8 +619,8 @@ world:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "No swing detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects placing blocks without sending a swing animation."
     
     # FastPlace Type C - Rotation check
     C:
@@ -563,8 +628,8 @@ world:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Rotation detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects placing blocks without looking at the correct face."
     
     # FastPlace Type D - Block spam
     D:
@@ -572,8 +637,8 @@ world:
       strictness: 2
       max-violations: 20
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Block spam detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects spamming block place packets."
     
     # FastPlace Type E - Predictive
     E:
@@ -581,8 +646,8 @@ world:
       strictness: 3
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Predictive placement"
+      actions: ["FLOW:major-movement"]
+      description: "Predicts placement location and flags impossible placements."
 
   scaffold:
     # Scaffold Type A - Tower detection
@@ -591,8 +656,8 @@ world:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
-      description: "Tower detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects building a tower upwards at an impossible speed."
     
     # Scaffold Type B - Rotation
     B:
@@ -600,8 +665,8 @@ world:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Scaffold rotation"
+      actions: ["FLOW:major-movement"]
+      description: "Detects robotic or snapping rotations typical of Scaffold."
     
     # Scaffold Type C - Timing
     C:
@@ -609,8 +674,8 @@ world:
       strictness: 2
       max-violations: 18
       buffer-size: 6
-      punishment: "FLAG"
-      description: "Place timing"
+      actions: ["FLOW:minor-movement"]
+      description: "Analyzes the timing between block placements."
     
     # Scaffold Type D - Speed
     D:
@@ -618,8 +683,8 @@ world:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Scaffold speed"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects building horizontally (bridging) at impossible speeds."
     
     # Scaffold Type E - Bridge
     E:
@@ -627,8 +692,8 @@ world:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
-      description: "Bridge detection"
+      actions: ["FLOW:minor-movement"]
+      description: "Analyzes patterns specific to automated bridging."
     
     # Scaffold Type F - God bridge
     F:
@@ -636,8 +701,8 @@ world:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
-      description: "God bridge detection"
+      actions: ["FLOW:major-movement"]
+      description: "Detects specific patterns of 'God Bridging' cheats."
     
     # Scaffold Type G - Sneak scaffold
     G:
@@ -645,8 +710,8 @@ world:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
-      description: "Sneak scaffold"
+      actions: ["FLOW:minor-movement"]
+      description: "Detects placing blocks while sneaking without looking down."
     
     # Scaffold Type H - Predictive
     H:
@@ -654,8 +719,17 @@ world:
       strictness: 3
       max-violations: 6
       buffer-size: 2
-      punishment: "FLAG"
-      description: "Predictive scaffold"
+      actions: ["FLOW:major-movement"]
+      description: "Predicts the next block placement and flags impossible moves."
+
+    # [NEW] Scaffold Type I - Diagonal
+    I:
+      enabled: true
+      strictness: 2
+      max-violations: 10
+      buffer-size: 4
+      actions: ["FLOW:major-movement"]
+      description: "Detects building diagonally at speeds impossible for a human."
 
 # Packet Checks
 packets:
@@ -666,7 +740,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (A)"]
       description: "Invalid position packet"
     
     B:
@@ -674,7 +748,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (B)"]
       description: "Invalid look packet"
     
     C:
@@ -682,7 +756,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid arm animation"
     
     D:
@@ -690,7 +764,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (D)"]
       description: "Invalid entity action"
     
     E:
@@ -698,7 +772,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid block place"
     
     F:
@@ -706,7 +780,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (F)"]
       description: "Invalid block dig"
     
     G:
@@ -714,7 +788,7 @@ packets:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid held item change"
     
     H:
@@ -722,7 +796,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (H)"]
       description: "Invalid creative action"
     
     I:
@@ -730,7 +804,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid window click"
     
     J:
@@ -738,7 +812,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (J)"]
       description: "Invalid transaction"
     
     K:
@@ -746,7 +820,7 @@ packets:
       strictness: 2
       max-violations: 12
       buffer-size: 4
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid chat message"
     
     L:
@@ -754,7 +828,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid entity interaction"
     
     M:
@@ -762,7 +836,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (M)"]
       description: "Invalid use entity"
     
     N:
@@ -770,7 +844,7 @@ packets:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid keep alive"
     
     O:
@@ -778,7 +852,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid position look"
     
     P:
@@ -786,7 +860,7 @@ packets:
       strictness: 2
       max-violations: 15
       buffer-size: 5
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid flying"
     
     Q:
@@ -794,7 +868,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (Q)"]
       description: "Invalid tab complete"
     
     R:
@@ -802,7 +876,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid resource pack status"
     
     S:
@@ -810,7 +884,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (S)"]
       description: "Invalid abilities"
     
     T:
@@ -818,7 +892,7 @@ packets:
       strictness: 2
       max-violations: 10
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid settings"
     
     U:
@@ -826,7 +900,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid custom payload"
     
     V:
@@ -834,7 +908,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (V)"]
       description: "Invalid vehicle move"
     
     W:
@@ -842,7 +916,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid steer vehicle"
     
     X:
@@ -850,7 +924,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (X)"]
       description: "Invalid craft request"
     
     Y:
@@ -858,7 +932,7 @@ packets:
       strictness: 3
       max-violations: 8
       buffer-size: 3
-      punishment: "FLAG"
+      actions: ["FLAG"]
       description: "Invalid enchant item"
     
     Z:
@@ -866,7 +940,7 @@ packets:
       strictness: 3
       max-violations: 5
       buffer-size: 2
-      punishment: "KICK"
+      actions: ["KICK:Invalid packet data (Z)"]
       description: "Invalid beaçon"
 
 # Check Profiles

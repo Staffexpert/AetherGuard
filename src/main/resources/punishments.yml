@@ -1,0 +1,38 @@
+# 🛡️ AetherGuard Punishment Flows
+# Define reusable sequences of actions to be triggered by checks.
+
+# This allows you to create complex, escalating punishment systems
+# and manage them from a single file.
+
+# You can reference these flows in checks.yml using 'FLOW:<flow_name>'
+# Example in checks.yml:
+# actions: ["FLOW:minor-movement"]
+
+flows:
+  # -- General Flows --
+  default-flag:
+    - "FLAG"
+    - "ALERT"
+
+  # -- Movement Flows --
+  minor-movement:
+    - "FLAG"
+    - "COMMAND:warn %player% Please avoid unusual movement."
+
+  major-movement:
+    - "FLAG"
+    - "ALERT"
+    - "FREEZE:10"
+    - "DISCORD:Movement Violation: %player% triggered %check% (%vl% VL)"
+
+  # -- Combat Flows --
+  suspicious-combat:
+    - "FLAG"
+    - "ALERT"
+
+  blatant-combat:
+    - "FLAG"
+    - "ALERT"
+    - "COMMAND:warn %player% Suspicious combat patterns detected."
+    - "FREEZE:15"
+    - "DISCORD:High-Priority Combat Violation: %player% triggered %check% (%vl% VL)"

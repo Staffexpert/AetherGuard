@@ -2,42 +2,50 @@ package com.aetherguard.managers;
 
 import com.aetherguard.checks.Check;
 import com.aetherguard.checks.CheckResult;
-import com.aetherguard.config.ConfigManager;
 import com.aetherguard.core.AetherGuard;
+import com.aetherguard.managers.interfaces.IActionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
- * 🛡️ AetherGuard Action Manager
- * 
- * Manages punishment actions and their execution
- * Handles action chains and delays
- * 
+ * AetherGuard v1.2.0 - Action Manager
+ *
+ * Manages and executes punishment actions with async/sync scheduling,
+ * cooldown tracking, and comprehensive error handling.
+ * Supports multiple action types: FLAG, ALERT, KICK, BAN, TEMPBAN, FREEZE, COMMAND, LOG, WEBHOOK
+ *
  * @author AetherGuard Team
- * @version 1.0.0
+ * @version 1.2.0
  */
-public class ActionManager {
-    
+public class ActionManager implements IActionManager {
+
     private final AetherGuard plugin;
     private final Map<String, ActionHandler> actionHandlers;
-    private final Map<UUID, Long> lastActionTimes;
-    
+    private final Map<UUID, Map<String, Long>> lastActionTimesByType;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     public ActionManager(AetherGuard plugin) {
         this.plugin = plugin;
-        this.actionHandlers = new HashMap<>();
-        this.lastActionTimes = new ConcurrentHashMap<>();
-        
+        this.actionHandlers = new ConcurrentHashMap<>();
+        this.lastActionTimesByType = new ConcurrentHashMap<>();
         initializeActionHandlers();
     }
-    
-    /**
-     * Initialize action handlers
-     */
+
     private void initializeActionHandlers() {
         actionHandlers.put("FLAG", this::handleFlag);
         actionHandlers.put("ALERT", this::handleAlert);
@@ -49,335 +57,344 @@ public class ActionManager {
         actionHandlers.put("LOG", this::handleLog);
         actionHandlers.put("WEBHOOK", this::handleWebhook);
     }
-    
-    /**
-     * Execute action for player
-     */
+
     public void executeAction(Player player, String actionName, Check check, CheckResult result) {
-        if (plugin.isTestMode()) {
-            plugin.getLogger().info("§7[TEST] Would execute action: " + actionName + " on " + player.getName());
+        if (player == null || actionName == null) {
             return;
         }
-        
-        // Parse action with parameters
-        ActionInfo actionInfo = parseAction(actionName);
-        
-        // Check cooldown
-        UUID uuid = player.getUniqueId();
-        long currentTime = System.currentTimeMillis();
-        Long lastTime = lastActionTimes.get(uuid);
-        
-        if (lastTime != null && (currentTime - lastTime) < actionInfo.getCooldown()) {
-            return; // Cooldown not passed
-        }
-        
-        // Get action handler
-        ActionHandler handler = actionHandlers.get(actionInfo.getType());
-        if (handler == null) {
-            plugin.getLogger().warning("§cUnknown action type: " + actionInfo.getType());
-            return;
-        }
-        
-        // Execute action with delay
-        long delay = actionInfo.getDelay();
-        if (delay > 0) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (player.isOnline()) {
-                    handler.handle(player, actionInfo, check, result);
-                    lastActionTimes.put(uuid, System.currentTimeMillis());
+
+        try {
+            ActionInfo actionInfo = parseAction(actionName);
+            String type = actionInfo.getType();
+            long now = System.currentTimeMillis();
+
+            Map<String, Long> perType = lastActionTimesByType.computeIfAbsent(
+                player.getUniqueId(), k -> new ConcurrentHashMap<>()
+            );
+            Long lastExecution = perType.get(type);
+            if (lastExecution != null && (now - lastExecution) < actionInfo.getCooldown()) {
+                return;
+            }
+
+            ActionHandler handler = actionHandlers.get(type);
+            if (handler == null) {
+                plugin.getLogger().log(Level.WARNING, "Unknown action type: " + type);
+                return;
+            }
+
+            Runnable task = () -> executeActionSafely(player, actionInfo, check, result, handler, perType, type);
+
+            long delayMs = actionInfo.getDelay();
+            if (delayMs > 0) {
+                long ticks = Math.max(1L, (delayMs + 49) / 50);
+                plugin.getServer().getScheduler().runTaskLater(plugin, task, ticks);
+            } else {
+                if (isAsyncAction(type)) {
+                    plugin.getAsyncExecutor().submit(task);
+                } else {
+                    plugin.getServer().getScheduler().runTask(plugin, task);
                 }
-            }, delay * 20 / 1000); // Convert milliseconds to ticks
-        } else {
-            handler.handle(player, actionInfo, check, result);
-            lastActionTimes.put(uuid, currentTime);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error executing action", e);
         }
     }
-    
-    /**
-     * Parse action string
-     */
+
+    private void executeActionSafely(Player player, ActionInfo action, Check check, CheckResult result,
+                                      ActionHandler handler, Map<String, Long> perType, String type) {
+        try {
+            handler.handle(player, action, check, result);
+            perType.put(type, System.currentTimeMillis());
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Action handler failed for " + type, e);
+        }
+    }
+
+    private boolean isAsyncAction(String type) {
+        return type.equals("WEBHOOK") || type.equals("LOG") || type.equals("COMMAND");
+    }
+
     private ActionInfo parseAction(String actionString) {
         String[] parts = actionString.split(":", 2);
-        String type = parts[0].toUpperCase();
+        String type = parts[0].toUpperCase(Locale.ROOT);
         String parameter = parts.length > 1 ? parts[1] : "";
-        
-        return new ActionInfo(type, parameter);
-    }
-    
-    /**
-     * Handle FLAG action
-     */
-    private void handleFlag(Player player, ActionInfo action, Check check, CheckResult result) {
-        // Flag is handled by violation system
-        // This is just a placeholder
-    }
-    
-    /**
-     * Handle ALERT action
-     */
-    private void handleAlert(Player player, ActionInfo action, Check check, CheckResult result) {
-        String message = plugin.getConfigManager().getMessage(
-            "alerts.punishment",
-            "player", player.getName(),
-            "reason", result.getReason()
-        );
-        
-        // Send to all staff
-        Bukkit.getOnlinePlayers().forEach(staff -> {
-            if (staff.hasPermission("aetherguard.alerts")) {
-                staff.sendMessage(message);
+
+        long cooldown = 1000L;
+        long delay = 0L;
+
+        if (!parameter.isEmpty() && parameter.contains("|")) {
+            String[] segs = parameter.split("\\|");
+            StringBuilder leftover = new StringBuilder();
+            for (String seg : segs) {
+                if (seg.contains("=")) {
+                    String[] kv = seg.split("=", 2);
+                    String key = kv[0].toLowerCase(Locale.ROOT);
+                    String value = kv[1];
+                    try {
+                        if ("cooldown".equals(key)) cooldown = Long.parseLong(value);
+                        else if ("delay".equals(key)) delay = Long.parseLong(value);
+                    } catch (NumberFormatException ignored) {}
+                } else {
+                    if (leftover.length() > 0) leftover.append("|");
+                    leftover.append(seg);
+                }
             }
-        });
+            parameter = leftover.toString();
+        }
+        return new ActionInfo(type, parameter, cooldown, delay);
     }
-    
-    /**
-     * Handle KICK action
-     */
+
+    private void handleFlag(Player player, ActionInfo action, Check check, CheckResult result) {
+        plugin.getViolationManager().addViolation(player.getUniqueId(), check.getFullName(), result.getConfidence(), result.getReason());
+        plugin.getLogger().log(Level.INFO, "[FLAG] " + player.getName() + " flagged by " + check.getFullName());
+    }
+
+    private void handleAlert(Player player, ActionInfo action, Check check, CheckResult result) {
+        String msg = plugin.getConfigManager().getMessage("alerts.punishment",
+            "player", player.getName(), "reason", result.getReason());
+        plugin.getServer().getOnlinePlayers().stream()
+            .filter(p -> p.hasPermission("aetherguard.alerts"))
+            .forEach(p -> p.sendMessage(msg));
+    }
+
     private void handleKick(Player player, ActionInfo action, Check check, CheckResult result) {
-        String reason = action.getParameter().isEmpty() ? 
-            plugin.getConfigManager().getMessage("general.default-kick-reason") : 
+        String reason = action.getParameter().isEmpty() ?
+            plugin.getConfigManager().getMessage("general.default-kick-reason") :
             action.getParameter();
         
-        player.kickPlayer(reason);
-        
-        plugin.getLogger().info("§cKicked player " + player.getName() + " for: " + reason);
+        plugin.getServer().getScheduler().runTask(plugin, () -> player.kickPlayer(reason));
+        plugin.getLogger().log(Level.INFO, "Kicked " + player.getName() + " for: " + reason);
     }
-    
-    /**
-     * Handle BAN action
-     */
+
     private void handleBan(Player player, ActionInfo action, Check check, CheckResult result) {
-        String reason = action.getParameter().isEmpty() ? 
-            plugin.getConfigManager().getMessage("general.default-ban-reason") : 
+        String reason = action.getParameter().isEmpty() ?
+            plugin.getConfigManager().getMessage("general.default-ban-reason") :
             action.getParameter();
-        
-        Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(player.getName(), reason, null, null);
-        player.kickPlayer(reason);
-        
-        plugin.getLogger().info("§cBanned player " + player.getName() + " for: " + reason);
+
+        // Usar BAN WAVES para baneos inteligentes
+        plugin.getBanWaveManager().queueBan(player, reason, check.getFullName());
     }
-    
-    /**
-     * Handle TEMPBAN action
-     */
+
     private void handleTempBan(Player player, ActionInfo action, Check check, CheckResult result) {
-        String parameter = action.getParameter();
-        String[] parts = parameter.split(" ", 2);
-        
+        String param = action.getParameter();
+        String[] parts = param.split(" ", 2);
         if (parts.length < 2) {
-            plugin.getLogger().warning("§cInvalid tempban format: " + parameter);
+            plugin.getLogger().log(Level.WARNING, "Invalid tempban format: " + param);
             return;
         }
-        
-        String durationStr = parts[0];
-        String reason = parts[1];
-        
-        long duration = parseDuration(durationStr);
+
+        long duration = parseDuration(parts[0]);
         if (duration <= 0) {
-            plugin.getLogger().warning("§cInvalid duration format: " + durationStr);
+            plugin.getLogger().log(Level.WARNING, "Invalid duration: " + parts[0]);
             return;
         }
+
+        String reason = parts[1];
+        Date expiry = new Date(System.currentTimeMillis() + duration * 1000L);
         
-        java.util.Date banExpiry = new java.util.Date(System.currentTimeMillis() + (duration * 60 * 1000));
-        Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(player.getName(), reason + " (Expires: " + durationStr + ")", banExpiry, null);
-        player.kickPlayer(reason + " (Duration: " + durationStr + ")");
-        
-        // Schedule unban
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            Bukkit.getBanList(org.bukkit.BanList.Type.NAME).pardon(player.getName());
-        }, duration * 20 * 60); // Convert minutes to ticks
-        
-        plugin.getLogger().info("§cTemporarily banned player " + player.getName() + " for " + durationStr + ": " + reason);
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            Bukkit.getBanList(org.bukkit.BanList.Type.NAME).addBan(player.getName(), reason, expiry, null);
+            player.kickPlayer(reason + " (temp)");
+        });
+        plugin.getLogger().log(Level.INFO, "Temp-banned " + player.getName() + " for " + duration + "s");
     }
-    
-    /**
-     * Handle FREEZE action - Prevents player movement for specified duration
-     */
+
     private void handleFreeze(Player player, ActionInfo action, Check check, CheckResult result) {
         long duration = parseDuration(action.getParameter());
-        if (duration <= 0) {
-            duration = 30;
-        }
-        
-        plugin.getPlayerManager().getPlayerData(player).setFrozen(true);
-        
-        org.bukkit.Location frozenLoc = player.getLocation();
-        player.teleport(frozenLoc);
-        player.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
-        
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+        if (duration <= 0) duration = 30;
+
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            player.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
+            player.sendMessage("§c§lAetherGuard §7» §cYou have been frozen");
+        });
+
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) {
-                plugin.getPlayerManager().getPlayerData(player).setFrozen(false);
                 player.sendMessage("§a§lAetherGuard §7» §aYou have been unfrozen");
             }
         }, duration * 20);
-        
-        player.sendMessage("§c§lAetherGuard §7» §cYou have been frozen for " + duration + " seconds");
-        plugin.getLogger().warning("§cFroze player " + player.getName() + " for " + duration + " seconds");
     }
-    
-    /**
-     * Handle COMMAND action
-     */
+
     private void handleCommand(Player player, ActionInfo action, Check check, CheckResult result) {
         String command = action.getParameter()
-                .replace("%player%", player.getName())
-                .replace("%uuid%", player.getUniqueId().toString())
-                .replace("%reason%", result.getReason())
-                .replace("%check%", check.getFullName());
+            .replace("%player%", player.getName())
+            .replace("%uuid%", player.getUniqueId().toString())
+            .replace("%reason%", result.getReason())
+            .replace("%check%", check.getFullName());
+
+        String finalCommand = command.startsWith("/") ? command : "/" + command;
         
-        if (!command.startsWith("/")) {
-            command = "/" + command;
-        }
-        
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        plugin.getLogger().info("§7Executed command: " + command);
-    }
-    
-    /**
-     * Handle LOG action - Write violation to log file
-     */
-    private void handleLog(Player player, ActionInfo action, Check check, CheckResult result) {
-        String logMessage = String.format(
-            "[%s] %s (%s) - Check: %s - Reason: %s - Confidence: %.2f",
-            new java.util.Date().toString(),
-            player.getName(),
-            player.getUniqueId().toString(),
-            check.getFullName(),
-            result.getReason(),
-            result.getConfidence()
-        );
-        
-        plugin.getLogger().info("§7[LOG] " + logMessage);
-        writeToLogFile(logMessage, player, check);
-    }
-    
-    /**
-     * Write violation to persistent log file
-     */
-    private void writeToLogFile(String logMessage, Player player, Check check) {
-        try {
-            java.io.File logsDir = new java.io.File(plugin.getDataFolder(), "logs");
-            if (!logsDir.exists()) {
-                logsDir.mkdirs();
+        plugin.getAsyncExecutor().submit(() -> {
+            try {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Command execution failed", e);
             }
-            
-            String date = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
-            java.io.File logFile = new java.io.File(logsDir, "violations-" + date + ".log");
-            
-            java.io.FileWriter writer = new java.io.FileWriter(logFile, true);
-            writer.write(logMessage + "\n");
-            writer.close();
-        } catch (Exception e) {
-            plugin.getLogger().warning("Failed to write to log file: " + e.getMessage());
+        });
+    }
+
+    private void handleLog(Player player, ActionInfo action, Check check, CheckResult result) {
+        String msg = String.format("[%s] %s (%s) - Check: %s - Reason: %s - Confidence: %.2f",
+            dateFormat.format(new Date()), player.getName(), player.getUniqueId(),
+            check.getFullName(), result.getReason(), result.getConfidence());
+        
+        plugin.getAsyncExecutor().submit(() -> {
+            try {
+                writeToLogFile(msg);
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.WARNING, "Log write failed", e);
+            }
+        });
+    }
+
+    private void writeToLogFile(String message) throws Exception {
+        File logsDir = new File(plugin.getDataFolder(), "logs");
+        if (!logsDir.exists()) logsDir.mkdirs();
+
+        String date = logDateFormat.format(new Date());
+        File logFile = new File(logsDir, "violations-" + date + ".log");
+
+        try (FileWriter writer = new FileWriter(logFile, true)) {
+            writer.write(message + "\n");
+            writer.flush();
         }
     }
-    
-    /**
-     * Handle WEBHOOK action - Send violation to Discord/webhook
-     */
+
     private void handleWebhook(Player player, ActionInfo action, Check check, CheckResult result) {
         String webhookUrl = action.getParameter();
         if (webhookUrl == null || webhookUrl.isEmpty()) {
             return;
         }
-        
-        plugin.getExecutorService().submit(() -> {
+
+        plugin.getAsyncExecutor().submit(() -> {
             try {
                 String payload = buildWebhookPayload(player, check, result);
                 sendWebhook(webhookUrl, payload);
-                plugin.getLogger().info("§7[WEBHOOK] Sent violation report for " + player.getName());
+                plugin.getLogger().log(Level.FINE, "Webhook sent for " + player.getName());
             } catch (Exception e) {
-                plugin.getLogger().warning("Failed to send webhook: " + e.getMessage());
+                plugin.getLogger().log(Level.WARNING, "Webhook failed", e);
             }
         });
     }
-    
-    /**
-     * Build Discord webhook JSON payload
-     */
+
     private String buildWebhookPayload(Player player, Check check, CheckResult result) {
-        StringBuilder json = new StringBuilder("{");
-        json.append("\"embeds\":[{");
-        json.append("\"title\":\"Violation Alert\",");
-        json.append("\"description\":\"Player flagged by anti-cheat\",");
-        json.append("\"color\":16711680,");
-        json.append("\"fields\":[");
-        json.append("{\"name\":\"Player\",\"value\":\"").append(player.getName()).append("\",\"inline\":true},");
-        json.append("{\"name\":\"UUID\",\"value\":\"").append(player.getUniqueId()).append("\",\"inline\":true},");
-        json.append("{\"name\":\"Check\",\"value\":\"").append(check.getFullName()).append("\",\"inline\":false},");
-        json.append("{\"name\":\"Reason\",\"value\":\"").append(result.getReason()).append("\",\"inline\":false},");
-        json.append("{\"name\":\"Confidence\",\"value\":\"").append(String.format("%.2f", result.getConfidence())).append("%\",\"inline\":true}");
-        json.append("]}]}");
-        return json.toString();
+        return "{"
+            + "\"embeds\":[{"
+            + "\"title\":\"Violation Alert\","
+            + "\"description\":\"Player flagged by AetherGuard\","
+            + "\"color\":16711680,"
+            + "\"fields\":["
+            + "{\"name\":\"Player\",\"value\":\"" + escapeJson(player.getName()) + "\",\"inline\":true},"
+            + "{\"name\":\"UUID\",\"value\":\"" + player.getUniqueId() + "\",\"inline\":true},"
+            + "{\"name\":\"Check\",\"value\":\"" + escapeJson(check.getFullName()) + "\",\"inline\":false},"
+            + "{\"name\":\"Reason\",\"value\":\"" + escapeJson(result.getReason()) + "\",\"inline\":false},"
+            + "{\"name\":\"Confidence\",\"value\":\"" + String.format("%.2f%%", result.getConfidence()) + "\",\"inline\":true}"
+            + "]}]}";
     }
-    
-    /**
-     * Send webhook to URL
-     */
+
+    private String escapeJson(String str) {
+        if (str == null) return "";
+        return str.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+    }
+
     private void sendWebhook(String webhookUrl, String payload) throws Exception {
-        java.net.URL url = new java.net.URL(webhookUrl);
-        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+        URL url = new URL(webhookUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
-        
-        try (java.io.OutputStream os = conn.getOutputStream()) {
-            os.write(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(5000);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(payload.getBytes(StandardCharsets.UTF_8));
         }
-        
-        conn.getResponseCode();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode >= 400) {
+            throw new RuntimeException("Webhook responded with " + responseCode);
+        }
         conn.disconnect();
     }
-    
-    /**
-     * Parse duration string
-     */
+
     private long parseDuration(String durationStr) {
+        if (durationStr == null || durationStr.isEmpty()) return -1;
         try {
-            if (durationStr.endsWith("s")) {
-                return Long.parseLong(durationStr.substring(0, durationStr.length() - 1));
-            } else if (durationStr.endsWith("m")) {
-                return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 60;
-            } else if (durationStr.endsWith("h")) {
-                return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 3600;
-            } else if (durationStr.endsWith("d")) {
-                return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 86400;
-            } else {
-                return Long.parseLong(durationStr) * 60; // Default to minutes
-            }
+            if (durationStr.endsWith("s")) return Long.parseLong(durationStr.substring(0, durationStr.length() - 1));
+            if (durationStr.endsWith("m")) return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 60;
+            if (durationStr.endsWith("h")) return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 3600;
+            if (durationStr.endsWith("d")) return Long.parseLong(durationStr.substring(0, durationStr.length() - 1)) * 86400;
+            return Long.parseLong(durationStr) * 60;
         } catch (NumberFormatException e) {
             return -1;
         }
     }
-    
-    /**
-     * Action information container
-     */
+
     private static class ActionInfo {
         private final String type;
         private final String parameter;
         private final long cooldown;
         private final long delay;
-        
-        public ActionInfo(String type, String parameter) {
+
+        public ActionInfo(String type, String parameter, long cooldown, long delay) {
             this.type = type;
             this.parameter = parameter;
-            this.cooldown = 1000; // 1 second default cooldown
-            this.delay = 0; // No delay by default
+            this.cooldown = cooldown;
+            this.delay = delay;
         }
-        
+
         public String getType() { return type; }
         public String getParameter() { return parameter; }
         public long getCooldown() { return cooldown; }
         public long getDelay() { return delay; }
     }
-    
-    /**
-     * Action handler interface
-     */
+
     @FunctionalInterface
     private interface ActionHandler {
         void handle(Player player, ActionInfo action, Check check, CheckResult result);
+    }
+
+    @Override
+    public void executeAction(Player player, String action, Object source, Object result) {
+        // Simplified implementation
+        if (source instanceof Check && result instanceof CheckResult) {
+            executeAction(player, action, (Check) source, (CheckResult) result);
+        }
+    }
+
+    @Override
+    public void executeActionAsync(Player player, String action, Object source, Object result) {
+        plugin.getAsyncExecutor().submit(() -> executeAction(player, action, source, result));
+    }
+
+    @Override
+    public boolean isActionCooldownActive(Player player, String action) {
+        if (player == null) return false;
+        Map<String, Long> perType = lastActionTimesByType.get(player.getUniqueId());
+        if (perType == null) return false;
+        Long last = perType.get(action);
+        return last != null && (System.currentTimeMillis() - last) < 1000; // 1 second default
+    }
+
+    @Override
+    public void setActionCooldown(Player player, String action, long durationMs) {
+        if (player != null) {
+            lastActionTimesByType.computeIfAbsent(player.getUniqueId(), k -> new ConcurrentHashMap<>())
+                .put(action, System.currentTimeMillis() + durationMs);
+        }
+    }
+
+    @Override
+    public int getExecutedActionsCount() {
+        return lastActionTimesByType.values().stream()
+            .mapToInt(Map::size)
+            .sum();
+    }
+
+    @Override
+    public void resetActionCooldowns(Player player) {
+        if (player != null) {
+            lastActionTimesByType.remove(player.getUniqueId());
+        }
     }
 }

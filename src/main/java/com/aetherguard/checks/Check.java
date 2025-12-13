@@ -129,31 +129,36 @@ public abstract class Check {
      */
     protected void onFlag(Player player, CheckResult result) {
         long currentTime = System.currentTimeMillis();
-        
+
         // Update flag statistics
         flags.incrementAndGet();
         lastFlagTime = currentTime;
-        
+
+        // Auto-ban/kick for high confidence detections
+        if (result.getConfidence() > 0.95) {
+            executeAutoPunishment(player, result);
+        }
+
         // Increment violations if needed
         if (result.isViolation()) {
             long newViolations = violations.incrementAndGet();
             lastViolationTime = currentTime;
-            
+
             // Update check manager stats
             plugin.getCheckManager().incrementCheckFlag(fullName);
-            
+
             // Handle violation
             if (newViolations >= maxViolations) {
                 onViolationThreshold(player, result);
             }
-            
+
             // Log flag
             logFlag(player, result, newViolations);
-            
+
             // Send alerts
             sendAlert(player, result, newViolations);
         }
-        
+
         // Debug information
         if (plugin.isDebugMode()) {
             sendDebugInfo(player, result);
@@ -161,13 +166,42 @@ public abstract class Check {
     }
     
     /**
+     * Execute automatic punishment for high confidence detections
+     */
+    protected void executeAutoPunishment(Player player, CheckResult result) {
+        if (plugin.isTestMode()) return;
+
+        // Determine punishment based on confidence and check type
+        String autoPunishment;
+        if (result.getConfidence() > 0.99) {
+            // 99%+ confidence = permanent ban
+            autoPunishment = "BAN:30d|cooldown=0"; // 30 days ban
+        } else if (result.getConfidence() > 0.97) {
+            // 97%+ confidence = temporary ban
+            autoPunishment = "TEMPBAN:7d|cooldown=0"; // 7 days ban
+        } else {
+            // 95%+ confidence = kick
+            autoPunishment = "KICK:High confidence cheat detection|cooldown=0";
+        }
+
+        plugin.getActionManager().executeAction(player, autoPunishment, this, result);
+
+        // Log auto-punishment
+        plugin.getLogger().warning("§c[AUTO-PUNISH] " + player.getName() + " auto-punished for " +
+            fullName + " (confidence: " + String.format("%.2f%%", result.getConfidence() * 100) + ")");
+
+        // Reset violations after auto-punishment
+        violations.set(0);
+    }
+
+    /**
      * Handle violation threshold
      */
     protected void onViolationThreshold(Player player, CheckResult result) {
         if (!plugin.isTestMode()) {
             plugin.getActionManager().executeAction(player, punishment, this, result);
         }
-        
+
         // Reset violations if configured
         if (plugin.getConfigManager().getMainConfig().getBoolean("violation-system.buffer.reset-on-punish", true)) {
             violations.set(0);
@@ -193,8 +227,18 @@ public abstract class Check {
         );
         
         plugin.getLogger().info("§7[FLAG] " + logMessage);
-        
-        // TODO: Write to log file
+
+        // Write to log file
+        try {
+            java.nio.file.Files.writeString(
+                java.nio.file.Paths.get("plugins/AetherGuard/logs/flags.log"),
+                logMessage + System.lineSeparator(),
+                java.nio.file.StandardOpenOption.CREATE,
+                java.nio.file.StandardOpenOption.APPEND
+            );
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to write flag to log file: " + e.getMessage());
+        }
     }
     
     /**

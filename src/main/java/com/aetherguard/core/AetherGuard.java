@@ -1,255 +1,169 @@
 package com.aetherguard.core;
 
-import com.aetherguard.commands.CommandManager;
 import com.aetherguard.config.ConfigManager;
-import com.aetherguard.gui.GUIManager;
-import com.aetherguard.listeners.PacketListener;
-import com.aetherguard.listeners.PlayerListener;
+import com.aetherguard.core.config.AppConfig;
+import com.aetherguard.core.container.ServiceContainer;
+import com.aetherguard.core.logging.AetherGuardLogger;
+import com.aetherguard.core.module.*;
+import com.aetherguard.core.monitoring.MonitoringService;
 import com.aetherguard.managers.*;
-import com.aetherguard.api.AetherGuardAPI;
-import com.aetherguard.security.AntiDisablerSystem;
+import com.aetherguard.managers.interfaces.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 /**
- * 🛡️ AetherGuard AntiCheat Main Class
- * 
- * The most complete and advanced open-source anti-cheat for Minecraft
- * Compatible with Spigot 1.8.x - 1.21.x, PaperMC, Purpur, Bukkit
- * 
- * Features:
- * - 100+ advanced checks across all categories
- * - Machine learning integration
- * - Web panel support
- * - Modular architecture
- * - High performance optimization
- * - Multi-version compatibility
- * 
- * @author AetherGuard Team
- * @version 1.0.0
+ * AetherGuard v3.0.0 - Premium Anti-Cheat Core
+ *
+ * Modular architecture with dependency injection, interface-based design,
+ * and centralized configuration. Supports plugin reloading and graceful shutdown.
+ *
+ * @version 2.0.0
  */
 public class AetherGuard extends JavaPlugin {
-    
-    // Singleton instance
     private static AetherGuard instance;
-    
-    // Core managers
-    private ConfigManager configManager;
-    private CheckManager checkManager;
-    private PlayerManager playerManager;
-    private ViolationManager violationManager;
-    private ActionManager actionManager;
-    private CommandManager commandManager;
-    private GUIManager guiManager;
-    
-    // Security system
-    private AntiDisablerSystem antiDisablerSystem;
-    
-    // API instance
-    private AetherGuardAPI api;
-    
-    // Thread pool for async operations
-    private ScheduledExecutorService executorService;
-    
-    // Plugin state
-    private boolean enabled = true;
-    private boolean debugMode = false;
-    private boolean testMode = false;
-    
+    private static final Object SINGLETON_LOCK = new Object();
+
+    private AetherGuardLogger logger;
+    private ServiceContainer serviceContainer;
+    private ModuleRegistry moduleRegistry;
+    private MonitoringService monitoringService;
+
+    private ScheduledExecutorService asyncExecutor;
+    private ExecutorService blockingExecutor;
+
+    private final AtomicBoolean enabled = new AtomicBoolean(true);
+    private final AtomicBoolean debugMode = new AtomicBoolean(false);
+    private final AtomicBoolean testMode = new AtomicBoolean(false);
+
     @Override
     public void onEnable() {
-        instance = this;
-        
-        // Initialize thread pool
-        executorService = Executors.newScheduledThreadPool(4);
-        
-        // Load configuration
-        loadConfiguration();
-        
-        // Initialize managers
-        initializeManagers();
-        
-        // Register events
-        registerEvents();
-        
-        // Register commands
-        registerCommands();
-        
-        // Start performance monitoring
-        startPerformanceMonitoring();
-        
-        // Log startup message
-        getLogger().info("§6§lAetherGuard AntiCheat §7§l» §aSuccessfully enabled!");
-        getLogger().info("§7Version: §f" + getDescription().getVersion());
-        getLogger().info("§7Checks loaded: §f" + checkManager.getTotalChecks());
-        getLogger().info("§7Detection profile: §f" + configManager.getDetectionProfile());
-        
-        // Check for updates
-        checkForUpdates();
+        synchronized (SINGLETON_LOCK) {
+            instance = this;
+        }
+
+        long startTime = System.currentTimeMillis();
+
+        try {
+            logger = new AetherGuardLogger(getLogger());
+            serviceContainer = new ServiceContainer(getLogger());
+            moduleRegistry = new ModuleRegistry(logger);
+
+            initializeExecutors();
+            serviceContainer.register(ScheduledExecutorService.class, asyncExecutor);
+            serviceContainer.register(ExecutorService.class, blockingExecutor);
+            serviceContainer.register(AetherGuardLogger.class, logger);
+
+            loadConfiguration();
+            monitoringService = new MonitoringService(logger);
+            serviceContainer.register(MonitoringService.class, monitoringService);
+
+            initializeManagers();
+            checkForUpdatesAsync();
+
+            long elapsed = System.currentTimeMillis() - startTime;
+            logBanner();
+            logger.info("§aPlugin initialized in " + elapsed + "ms");
+            logger.info("§7Checks: §f" + getCheckManager().getTotalChecks());
+            logger.info("§7Profile: §f" + getConfigManager().getDetectionProfile());
+
+        } catch (Exception e) {
+            if (logger != null) {
+                logger.error("FATAL ERROR during initialization", e);
+            } else {
+                getLogger().log(Level.SEVERE, "FATAL ERROR", e);
+            }
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
     }
-    
+
     @Override
     public void onDisable() {
-        // Shutdown executor service
-        if (executorService != null) {
-            executorService.shutdown();
-            try {
-                if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                    executorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                executorService.shutdownNow();
+        try {
+            if (moduleRegistry != null) {
+                moduleRegistry.disableAll().join();
+            }
+
+            shutdownExecutors();
+            if (serviceContainer != null) {
+                serviceContainer.clear();
+            }
+
+            if (logger != null) {
+                logger.success("Plugin shutdown complete");
+            } else {
+                getLogger().log(Level.INFO, "Plugin shutdown complete");
+            }
+        } catch (Exception e) {
+            if (logger != null) {
+                logger.error("Shutdown error", e);
+            } else {
+                getLogger().log(Level.SEVERE, "Shutdown error", e);
             }
         }
-        
-        // Save data
-        if (playerManager != null) {
-            playerManager.saveAllData();
-        }
-        
-        // Cleanup
-        if (violationManager != null) {
-            violationManager.cleanup();
-        }
-        
-        getLogger().info("§6§lAetherGuard AntiCheat §7§l» §cSuccessfully disabled!");
     }
-    
-    /**
-     * Load configuration files
-     */
+
+    private void initializeExecutors() {
+        this.asyncExecutor = new ScheduledThreadPoolExecutor(
+            AppConfig.Threading.ASYNC_THREAD_COUNT,
+            r -> {
+                Thread t = new Thread(r, AppConfig.Threading.ASYNC_THREAD_NAME);
+                t.setDaemon(true);
+                return t;
+            }
+        );
+        this.blockingExecutor = Executors.newFixedThreadPool(
+            AppConfig.Threading.BLOCKING_THREAD_COUNT,
+            r -> {
+                Thread t = new Thread(r, AppConfig.Threading.BLOCKING_THREAD_NAME);
+                t.setDaemon(true);
+                return t;
+            }
+        );
+    }
+
     private void loadConfiguration() {
-        saveDefaultConfig();
-        configManager = new ConfigManager(this);
-        configManager.loadConfigurations();
-        
-        // Load detection profile
-        String profile = configManager.getDetectionProfile();
-        getLogger().info("§7Detection profile loaded: §f" + profile);
+        // La configuración ahora se gestiona dentro del SystemModule
     }
-    
-    /**
-     * Initialize all managers
-     */
+
     private void initializeManagers() {
-        // Initialize check manager first
-        checkManager = new CheckManager(this);
-        
-        // Initialize other managers
-        playerManager = new PlayerManager(this);
-        violationManager = new ViolationManager(this);
-        actionManager = new ActionManager(this);
-        commandManager = new CommandManager(this);
-        guiManager = new GUIManager(this);
-        
-        // Initialize security systems
-        antiDisablerSystem = new AntiDisablerSystem(this);
-        
-        // Initialize API
-        api = new AetherGuardAPI(this);
-        
-        getLogger().info("§7All managers initialized successfully");
+        moduleRegistry.register(new CoreModule(this));
+        moduleRegistry.register(new DetectionModule(this));
+        moduleRegistry.register(new AnalyticsModule(this));
+        moduleRegistry.register(new SystemModule(this));
+
+        // Enable all modules
+        moduleRegistry.enableAll().join();
     }
-    
-    /**
-     * Register event listeners
-     */
-    private void registerEvents() {
-        // Register packet listener (if available)
-        try {
-            getServer().getPluginManager().registerEvents(new PacketListener(this), this);
-        } catch (Exception e) {
-            getLogger().warning("§cPacket listener could not be registered: " + e.getMessage());
+
+    private void checkForUpdatesAsync() {
+        if (!getConfig().getBoolean("update-checker", AppConfig.Default.UPDATE_CHECKER_ENABLED)) {
+            return;
         }
-        
-        // Register player listener
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        
-        getLogger().info("§7Event listeners registered");
-    }
-    
-    /**
-     * Register commands
-     */
-    private void registerCommands() {
-        commandManager.registerCommands();
-        getLogger().info("§7Commands registered");
-    }
-    
-    /**
-     * Start performance monitoring
-     */
-    private void startPerformanceMonitoring() {
-        // Monitor TPS every 5 seconds
-        executorService.scheduleAtFixedRate(() -> {
+
+        blockingExecutor.submit(() -> {
             try {
-                Object tpsObj = getServer().getClass().getMethod("getTPS").invoke(getServer());
-                if (tpsObj instanceof double[]) {
-                    double[] tps = (double[]) tpsObj;
-                    if (tps[0] < 15.0) {
-                        getLogger().warning("§cLow TPS detected: " + String.format("%.2f", tps[0]));
-                    }
+                String current = getDescription().getVersion();
+                String latest = fetchLatestVersionFromGitHub();
+                if (latest != null && !latest.equals(current)) {
+                    logger.warn("New version available: " + latest);
                 }
             } catch (Exception e) {
-                // getTPS not available on this server version
+                logger.debug("Update check failed: " + e.getMessage());
             }
-        }, 5, 5, TimeUnit.SECONDS);
-        
-        // Cleanup old violations every minute
-        executorService.scheduleAtFixedRate(() -> {
-            if (violationManager != null) {
-                violationManager.cleanupOldViolations();
-            }
-        }, 60, 60, TimeUnit.SECONDS);
-        
-        // Auto-save player data every 5 minutes
-        executorService.scheduleAtFixedRate(() -> {
-            if (playerManager != null) {
-                playerManager.saveAllData();
-            }
-        }, 300, 300, TimeUnit.SECONDS);
+        });
     }
-    
-    /**
-     * Check for updates from GitHub releases
-     */
-    private void checkForUpdates() {
-        if (getConfig().getBoolean("update-checker", true)) {
-            executorService.submit(() -> {
-                try {
-                    String currentVersion = getDescription().getVersion();
-                    String latestVersion = fetchLatestVersion();
-                    
-                    if (latestVersion != null && !latestVersion.equals(currentVersion)) {
-                        getLogger().warning("§e§l[UPDATE] §eA new version is available!");
-                        getLogger().warning("§e§l[UPDATE] §eCurrent: §f" + currentVersion);
-                        getLogger().warning("§e§l[UPDATE] §eLatest: §f" + latestVersion);
-                        getLogger().warning("§e§l[UPDATE] §eDownload at: §fhttps://github.com/Staffexpert/AetherGuard-AntiCheat/releases");
-                    } else {
-                        getLogger().info("§7You are running the latest version of AetherGuard");
-                    }
-                } catch (Exception e) {
-                    getLogger().fine("Update check failed: " + e.getMessage());
-                }
-            });
-        }
-    }
-    
-    /**
-     * Fetch latest version from GitHub API
-     */
-    private String fetchLatestVersion() {
+
+    private String fetchLatestVersionFromGitHub() {
         try {
-            java.net.URL url = new java.net.URL("https://api.github.com/repos/Staffexpert/AetherGuard-AntiCheat/releases/latest");
+            java.net.URL url = new java.net.URL(AppConfig.Updates.GITHUB_API_URL);
             java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            conn.setRequestProperty("User-Agent", "AetherGuard-AntiCheat");
-            
+            conn.setConnectTimeout(AppConfig.Updates.GITHUB_TIMEOUT_MS);
+            conn.setReadTimeout(AppConfig.Updates.GITHUB_TIMEOUT_MS);
+
             if (conn.getResponseCode() == 200) {
                 java.io.BufferedReader reader = new java.io.BufferedReader(
                     new java.io.InputStreamReader(conn.getInputStream())
@@ -260,195 +174,229 @@ public class AetherGuard extends JavaPlugin {
                     response.append(line);
                 }
                 reader.close();
-                
-                String jsonResponse = response.toString();
-                int tagIndex = jsonResponse.indexOf("\"tag_name\":\"");
-                if (tagIndex != -1) {
-                    int startIndex = tagIndex + 12;
-                    int endIndex = jsonResponse.indexOf("\"", startIndex);
-                    return jsonResponse.substring(startIndex, endIndex);
+
+                String json = response.toString();
+                int idx = json.indexOf("\"tag_name\":\"");
+                if (idx != -1) {
+                    int start = idx + 12;
+                    int end = json.indexOf("\"", start);
+                    return json.substring(start, end);
                 }
             }
         } catch (Exception e) {
-            getLogger().fine("Failed to fetch version: " + e.getMessage());
+            logger.debug("Failed to fetch latest version: " + e.getMessage());
         }
         return null;
     }
-    
-    // Getters
+
+    private void shutdownExecutors() throws InterruptedException {
+        if (asyncExecutor != null && !asyncExecutor.isShutdown()) {
+            asyncExecutor.shutdown();
+            if (!asyncExecutor.awaitTermination(AppConfig.Executors.SHUTDOWN_TIMEOUT_ASYNC, TimeUnit.SECONDS)) {
+                asyncExecutor.shutdownNow();
+            }
+        }
+        if (blockingExecutor != null && !blockingExecutor.isShutdown()) {
+            blockingExecutor.shutdown();
+            if (!blockingExecutor.awaitTermination(AppConfig.Executors.SHUTDOWN_TIMEOUT_BLOCKING, TimeUnit.SECONDS)) {
+                blockingExecutor.shutdownNow();
+            }
+        }
+    }
+
+    private void logBanner() {
+        logger.info("");
+        logger.info("§d╔══════════════════════════════════════════════════════════════════╗");
+        logger.info("§d║                                                                  ║");
+        logger.info("§d║  █████╗ ███████╗████████╗██╗  ██╗███████╗██████╗  ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗  ║");
+        logger.info("§d║ ██╔══██╗██╔════╝╚══██╔══╝██║  ██║██╔════╝██╔══██╗██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗ ║");
+        logger.info("§d║ ███████║█████╗     ██║   ███████║█████╗  ██████╔╝██║  ███╗██║   ██║███████║██████╔╝██║  ██║ ║");
+        logger.info("§d║ ██╔══██║██╔══╝     ██║   ██╔══██║██╔══╝  ██╔══██╗██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║ ║");
+        logger.info("§d║ ██║  ██║███████╗   ██║   ██║  ██║███████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝ ║");
+        logger.info("§d║ ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ║");
+        logger.info("§d║                                                                  ║");
+        logger.info("§d╠══════════════════════════════════════════════════════════════════╣");
+        logger.info("§d║                    🛡️  ANTI-CHEAT PREMIUM v" + AppConfig.VERSION + " 🛡️                     ║");
+        logger.info("§d╠══════════════════════════════════════════════════════════════════╣");
+        logger.info("§d║ ✨ Sistema de detección multi-capa avanzado                      ║");
+        logger.info("§d║ 🧠 Análisis de comportamiento en tiempo real                     ║");
+        logger.info("§d║ 🔄 Aprendizaje adaptativo y reconocimiento de patrones          ║");
+        logger.info("§d║ 🎯 Baja tasa de falsos positivos con umbrales configurables      ║");
+        logger.info("§d║ 🏗️  Arquitectura modular con inyección de dependencias           ║");
+        logger.info("§d║ 🚀 Optimizado para un rendimiento excepcional                    ║");
+        logger.info("§d║ 💎 Protección robusta y fiable para tu servidor                 ║");
+        logger.info("§d╠══════════════════════════════════════════════════════════════════╣");
+        logger.info("§d║                ✅ SISTEMA DE PROTECCIÓN ACTIVADO ✅                ║");
+        logger.info("§d╚══════════════════════════════════════════════════════════════════╝");
+        logger.info("");
+        logger.info("§a🌟 Inicializando módulos del sistema...");
+        logger.info("");
+    }
+
     public static AetherGuard getInstance() {
+        if (instance == null) {
+            synchronized (SINGLETON_LOCK) {
+                if (instance == null) {
+                    throw new IllegalStateException("AetherGuard not initialized");
+                }
+            }
+        }
         return instance;
     }
-    
+
+    public AetherGuardLogger getAetherGuardLogger() {
+        return logger;
+    }
+
+    public ServiceContainer getServiceContainer() {
+        return serviceContainer;
+    }
+
+    public ModuleRegistry getModuleRegistry() {
+        return moduleRegistry;
+    }
+
+    public MonitoringService getMonitoringService() {
+        return monitoringService;
+    }
+
+    // Métodos de acceso a los managers (a través del ServiceContainer)
+
     public ConfigManager getConfigManager() {
-        return configManager;
+        return serviceContainer.get(ConfigManager.class);
     }
-    
+
     public CheckManager getCheckManager() {
-        return checkManager;
+        return serviceContainer.get(CheckManager.class);
     }
-    
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+
+    public IPlayerManager getPlayerManager() {
+        return serviceContainer.get(IPlayerManager.class);
     }
-    
-    public ViolationManager getViolationManager() {
-        return violationManager;
+
+    public IViolationManager getViolationManager() {
+        return serviceContainer.get(IViolationManager.class);
     }
-    
-    public ActionManager getActionManager() {
-        return actionManager;
+
+    public IActionManager getActionManager() {
+        return serviceContainer.get(IActionManager.class);
     }
-    
-    public CommandManager getCommandManager() {
-        return commandManager;
+
+    public BanWaveManager getBanWaveManager() {
+        return serviceContainer.get(BanWaveManager.class);
     }
-    
-    public GUIManager getGUIManager() {
-        return guiManager;
+
+    public PredictiveAnalyticsManager getPredictiveAnalyticsManager() {
+        return serviceContainer.get(PredictiveAnalyticsManager.class);
     }
-    
-    public AetherGuardAPI getAPI() {
-        return api;
+
+    public AdaptiveLearningManager getAdaptiveLearningManager() {
+        return serviceContainer.get(AdaptiveLearningManager.class);
     }
-    
+
+    public ScheduledExecutorService getAsyncExecutor() {
+        return asyncExecutor;
+    }
+
+    public ExecutorService getBlockingExecutor() {
+        return blockingExecutor;
+    }
+
+    @Deprecated(since = "2.0.0", forRemoval = true)
     public ScheduledExecutorService getExecutorService() {
-        return executorService;
+        return asyncExecutor;
     }
-    
-    public AntiDisablerSystem getAntiDisablerSystem() {
-        return antiDisablerSystem;
+
+    public boolean isAntiCheatEnabled() { return enabled.get(); }
+    public void setAntiCheatEnabled(boolean value) {
+        enabled.set(value);
+        getLogger().log(value ? Level.INFO : Level.WARNING,
+            value ? "§aAnticheat enabled" : "§cAnticheat disabled");
     }
-    
-    // State management
-    public boolean isAntiCheatEnabled() {
-        return enabled;
+
+    public boolean isDebugMode() { return debugMode.get(); }
+    public void setDebugMode(boolean value) {
+        debugMode.set(value);
+        getLogger().log(Level.INFO, value ? "§aDebug ON" : "§cDebug OFF");
     }
-    
-    public void setAntiCheatEnabled(boolean enabled) {
-        this.enabled = enabled;
-        if (!enabled) {
-            getLogger().info("§cAetherGuard has been disabled");
-        } else {
-            getLogger().info("§aAetherGuard has been enabled");
-        }
+
+    public boolean isTestMode() { return testMode.get(); }
+    public void setTestMode(boolean value) {
+        testMode.set(value);
+        getLogger().log(Level.INFO, value ? "§aTest mode ON" : "§cTest mode OFF");
     }
-    
-    public boolean isDebugMode() {
-        return debugMode;
-    }
-    
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode = debugMode;
-        if (debugMode) {
-            getLogger().info("§aDebug mode has been enabled");
-        } else {
-            getLogger().info("§cDebug mode has been disabled");
-        }
-    }
-    
-    public boolean isTestMode() {
-        return testMode;
-    }
-    
-    public void setTestMode(boolean testMode) {
-        this.testMode = testMode;
-        if (testMode) {
-            getLogger().info("§aTest mode has been enabled - No punishments will be issued");
-        } else {
-            getLogger().info("§cTest mode has been disabled - Normal punishments resumed");
-        }
-    }
-    
-    /**
-     * Get server version string
-     */
-    public String getServerVersion() {
-        return Bukkit.getVersion();
-    }
-    
-    /**
-     * Get protocol version
-     */
+
+    public String getServerVersion() { return Bukkit.getVersion(); }
     public int getProtocolVersion() {
-        // Simplified version detection
-        String version = getServerVersion();
-        if (version.contains("1.8")) return 47;
-        if (version.contains("1.9")) return 107;
-        if (version.contains("1.10")) return 210;
-        if (version.contains("1.11")) return 315;
-        if (version.contains("1.12")) return 338;
-        if (version.contains("1.13")) return 393;
-        if (version.contains("1.14")) return 452;
-        if (version.contains("1.15")) return 550;
-        if (version.contains("1.16")) return 735;
-        if (version.contains("1.17")) return 755;
-        if (version.contains("1.18")) return 757;
-        if (version.contains("1.19")) return 759;
-        if (version.contains("1.20")) return 763;
-        if (version.contains("1.21")) return 767;
-        return 47; // Default to 1.8
+        String v = getServerVersion();
+        if (v.contains("1.21")) return 767;
+        if (v.contains("1.20")) return 763;
+        if (v.contains("1.19")) return 759;
+        if (v.contains("1.18")) return 757;
+        if (v.contains("1.17")) return 755;
+        if (v.contains("1.16")) return 735;
+        if (v.contains("1.15")) return 550;
+        if (v.contains("1.14")) return 452;
+        if (v.contains("1.13")) return 393;
+        if (v.contains("1.12")) return 338;
+        if (v.contains("1.11")) return 315;
+        if (v.contains("1.10")) return 210;
+        if (v.contains("1.9")) return 107;
+        return 47;
     }
-    
-    /**
-     * Check if a plugin is present
-     */
+
     public boolean isPluginEnabled(String pluginName) {
         return Bukkit.getPluginManager().isPluginEnabled(pluginName);
     }
-    
-    /**
-     * Get memory usage information
-     */
-    public MemoryUsage getMemoryUsage() {
+
+    public long getLastTPS() { return monitoringService.getTPS(); }
+    public double getMemoryUsagePercentage() { return monitoringService.getMemoryUsagePercentage(); }
+
+    public MemoryInfo getMemoryInfo() {
         Runtime runtime = Runtime.getRuntime();
-        long maxMemory = runtime.maxMemory();
-        long totalMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
-        long usedMemory = totalMemory - freeMemory;
-        
-        return new MemoryUsage(usedMemory, maxMemory, totalMemory);
+        return new MemoryInfo(
+            runtime.totalMemory() - runtime.freeMemory(),
+            runtime.maxMemory(),
+            runtime.totalMemory()
+        );
     }
-    
-    /**
-     * Memory usage data class
-     */
-    public static class MemoryUsage {
-        private final long used;
-        private final long max;
-        private final long total;
-        
-        public MemoryUsage(long used, long max, long total) {
+
+    public static class MemoryInfo {
+        public final long used, max, total;
+
+        public MemoryInfo(long used, long max, long total) {
             this.used = used;
             this.max = max;
             this.total = total;
         }
-        
-        public long getUsed() { return used; }
-        public long getMax() { return max; }
-        public long getTotal() { return total; }
-        
-        public double getUsagePercentage() {
-            return (double) used / max * 100;
+
+        public double getUsagePercentage() { return (double) used / max * 100.0; }
+        public String formatUsed() { return formatBytes(used); }
+        public String formatMax() { return formatBytes(max); }
+        public String formatTotal() { return formatBytes(total); }
+
+        private static String formatBytes(long bytes) {
+            if (bytes < 1024) return bytes + "B";
+            if (bytes < 1024 * 1024) return String.format("%.1fKB", bytes / 1024.0);
+            if (bytes < 1024 * 1024 * 1024) return String.format("%.1fMB", bytes / (1024.0 * 1024.0));
+            return String.format("%.1fGB", bytes / (1024.0 * 1024.0 * 1024.0));
         }
-        
-        public String getFormattedUsed() {
-            return formatBytes(used);
-        }
-        
-        public String getFormattedMax() {
-            return formatBytes(max);
-        }
-        
-        public String getFormattedTotal() {
-            return formatBytes(total);
-        }
-        
-        private String formatBytes(long bytes) {
-            if (bytes < 1024) return bytes + " B";
-            if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
-            if (bytes < 1024 * 1024 * 1024) return String.format("%.1f MB", bytes / (1024.0 * 1024.0));
-            return String.format("%.1f GB", bytes / (1024.0 * 1024.0 * 1024.0));
-        }
+    }
+
+    @Deprecated(forRemoval = true, since = "1.2.0")
+    public static class MemoryUsage extends MemoryInfo {
+        public MemoryUsage(long used, long max, long total) { super(used, max, total); }
+        public String getFormattedUsed() { return formatUsed(); }
+        public String getFormattedMax() { return formatMax(); }
+        public String getFormattedTotal() { return formatTotal(); }
+    }
+
+    // Placeholder methods for missing managers
+    public PerformanceAnalyticsManager getPerformanceAnalyticsManager() {
+        return serviceContainer.get(PerformanceAnalyticsManager.class);
+    }
+
+    public Object getCloudSyncManager() {
+        return null; // Placeholder - not implemented yet
     }
 }

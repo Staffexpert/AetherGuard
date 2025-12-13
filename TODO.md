@@ -365,9 +365,7 @@ Community - Bug reports and suggestions
 Testers - Beta testing and feedback
 Thanks To
 SpigotMC community for inspiration
-GrimAC for movement detection concepts
-VulcanAC for combat detection ideas
-Matrix AntiCheat for packet handling
+
 🚀 Roadmap
 v1.1 (Upcoming)
  Advanced ML models

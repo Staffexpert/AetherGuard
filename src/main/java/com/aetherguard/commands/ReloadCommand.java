@@ -1,36 +1,45 @@
-package com.aetherguard.commands;
+package com.aetherguard.commands.subcommands;
 
+import com.aetherguard.config.ConfigManager;
 import com.aetherguard.core.AetherGuard;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Collections;
-import java.util.List;
-
-/**
- * 🛡️ AetherGuard Reload Command
- *
- * Reloads all configuration files for the plugin.
- *
- * @author AetherGuard Team
- * @version 1.0.0
- */
-public class ReloadCommand extends BaseCommand {
+public class ReloadCommand extends SubCommand {
 
     public ReloadCommand(AetherGuard plugin) {
-        super(plugin, "reload", "aetherguard.reload", false);
+        super(plugin);
+    }
+
+    @Override
+    public String getName() {
+        return "reload";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Recarga la configuración del plugin.";
+    }
+
+    @Override
+    public String getSyntax() {
+        return "/ag reload";
+    }
+
+    @Override
+    public String getPermission() {
+        return "aetherguard.admin.reload";
+    }
+
+    @Override
+    public boolean isConsoleAllowed() {
+        return true;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        sender.sendMessage(ChatColor.GOLD + "Reloading AetherGuard configurations...");
-        plugin.getConfigManager().reloadConfigurations();
-        plugin.getCheckManager().reloadChecks();
-        sender.sendMessage(ChatColor.GREEN + "AetherGuard has been reloaded successfully!");
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return Collections.emptyList();
+        plugin.getConfigManager().loadConfigurations();
+        sender.sendMessage(ChatColor.GREEN + "AetherGuard ha sido recargado correctamente.");
+        plugin.getAetherGuardLogger().info("Configuración recargada por " + sender.getName() + ".");
     }
 }

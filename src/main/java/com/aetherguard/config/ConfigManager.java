@@ -12,13 +12,14 @@ import java.util.Map;
 import java.util.logging.Level;
 
 /**
- * 🛡️ AetherGuard Configuration Manager
- * 
- * Handles all configuration files and settings for the anti-cheat system
- * Supports multiple configuration formats and automatic reloading
- * 
- * @author AetherGuard Team
- * @version 1.0.0
+ * AetherGuard Configuration Manager
+ * Version: v1.2.0
+ *
+ * Handles all configuration files and settings for the anti-cheat system.
+ * Designed for safe reloads, caching and compatibility across server versions.
+ * Provides typed accessors for checks, profiles and performance tuning.
+ *
+ * Author: AetherGuard Team
  */
 public class ConfigManager {
     
@@ -168,6 +169,15 @@ public class ConfigManager {
     public void saveMainConfig() {
         saveConfig("config");
         plugin.saveConfig();
+    }
+
+    /**
+     * Save all managed configuration files to disk
+     */
+    public void saveAllConfigs() {
+        for (String name : configFiles.keySet()) {
+            saveConfig(name);
+        }
     }
     
     /**
