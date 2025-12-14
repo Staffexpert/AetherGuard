@@ -1,4 +1,4 @@
-# 🛡️ AetherGuard AntiCheat v1.1
+# 🛡️ AetherGuard AntiCheat 
 
 **The Most Complete and Advanced Open-Source Anti-Cheat for Minecraft!**
 
@@ -12,7 +12,7 @@ AetherGuard is a **professional, modular, and ultra-complete** solution, offerin
 
 ## ✨ Core Features & **v1.1 Highlights**
 
-| Feature Category | Description | v1.1 Focus |
+| Feature Category | Description | AetherGuard Focus |
 | :--- | :--- | :--- |
 | **🎯 Security** | **100+ Advanced Checks** across 8 core categories (Movement, Combat, World, Packets, Exploits, etc.). | Enhanced detection logic and exploit patches. |
 | **🧠 Intelligence** | Predictive detection with **Pattern Analysis** and **Machine Learning** (Optional). | **Advanced ML Models** for improved accuracy. |
